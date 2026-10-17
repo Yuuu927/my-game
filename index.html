@@ -1,0 +1,652 @@
+<!DOCTYPE html>  
+<html lang="zh-CN">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">  
+<title>夜莺账簿</title>  
+<style>  
+:root{--ink:#1a1a2e;--paper:#faf6ee;--line:#1a1a2e;--gold:#b58c52;--red:#c62828;--green:#6f9e6f;--shadow:5px 5px 0 rgba(26,26,46,.9)}  
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}  
+body{font-family:"Courier New","PingFang SC",sans-serif;background:linear-gradient(135deg,#d9cdbb,#efe7da);display:flex;justify-content:center;min-height:100vh;color:var(--ink)}  
+.app{width:100%;max-width:460px;min-height:100vh;display:flex;flex-direction:column;background:var(--paper);box-shadow:0 0 40px rgba(0,0,0,.25);border-left:2px solid var(--line);border-right:2px solid var(--line);position:relative}  
+.hd{padding:14px 14px 10px;background:var(--ink);color:#fff;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50}  
+.row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}  
+h1{font-size:17px;letter-spacing:2px;color:var(--gold)}.by{font-size:10px;color:#b58c52;margin-left:6px}.sub{font-size:10px;color:#bbb}  
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}  
+.tg{background:#2a2a40;border:1px solid #4a4a60;color:#eee;padding:3px 8px;font-size:10px;font-weight:bold;border-radius:3px}  
+.cr{background:var(--red);border-color:#ff6b6b;color:#fff}  
+.debtbar{display:flex;align-items:center;gap:8px;font-size:10px}.lb{color:#f0d9a0;white-space:nowrap}  
+.db{flex:1;height:12px;background:#0e0e1a;border:1px solid #4a4a60;border-radius:6px;overflow:hidden}  
+.df{height:100%;background:linear-gradient(90deg,var(--red),#e57373);transition:width .4s}  
+.rt{color:#ffb4a2;white-space:nowrap}  
+.mn{flex:1;padding:14px;overflow-y:auto;padding-bottom:150px}  
+.lc{background:#fff;border:2px solid var(--line);padding:14px;box-shadow:var(--shadow);margin-bottom:14px;height:210px;display:flex;flex-direction:column}  
+.lc h2{font-size:13px;border-bottom:2px dashed var(--line);padding-bottom:8px;margin-bottom:10px;color:var(--gold)}  
+#log{flex:1;overflow-y:auto}#log p{font-size:12px;line-height:1.7;margin-bottom:5px;color:#555;border-left:2px solid #ddd;padding-left:6px}  
+.gd{color:var(--gold);font-weight:bold}.rd{color:var(--red);font-weight:bold}.gy{color:#777}  
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}  
+.ac{background:#fff;border:2px solid var(--line);padding:13px;display:flex;gap:10px;box-shadow:4px 4px 0 rgba(26,26,46,.8);cursor:pointer;transition:.08s}  
+.ac:active{transform:translate(4px,4px);box-shadow:none}  
+.ac.tr{background:#ccc;opacity:.55;pointer-events:none}  
+.aci{font-size:22px}.aci2{flex:1;min-width:0}  
+.act{font-size:13px;font-weight:bold;margin-bottom:4px;display:flex;gap:6px;flex-wrap:wrap}  
+.acd{font-size:10px;color:#777;margin-bottom:5px}.acc{font-size:10px;color:var(--green);font-weight:bold}  
+.em{display:inline-block;border:1px solid;padding:0 5px;font-size:9px;border-radius:8px}  
+.bt{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:var(--paper);border-top:3px solid var(--line);z-index:50}  
+.bn{display:flex;justify-content:space-around;padding:7px 0;border-bottom:1px solid #ccc}  
+.nb{background:none;border:none;display:flex;flex-direction:column;align-items:center;font-size:10px;color:#999;width:16.6%;font-weight:bold}  
+.nb .ic{font-size:16px;margin-bottom:2px}.nb.a{color:var(--ink)}  
+.ba{display:flex;gap:8px;padding:9px 12px 13px}  
+.bn2{flex:1;border:2px solid var(--line);font-weight:bold;font-size:12px;padding:12px 0;background:#fff;box-shadow:3px 3px 0 var(--line);cursor:pointer}  
+.bn2:active{transform:translate(3px,3px);box-shadow:none}.be{background:var(--ink);color:#fff;border-color:#000}  
+.mo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;display:none;justify-content:center;align-items:center;padding:20px}  
+.mo.s{display:flex}  
+.mb{background:var(--paper);border:2px solid var(--line);width:100%;max-width:380px;max-height:85vh;overflow-y:auto;padding:20px;box-shadow:8px 8px 0 var(--line);position:relative}  
+.mt{font-size:16px;font-weight:bold;margin-bottom:14px;text-align:center;border-bottom:2px solid var(--line);padding-bottom:11px;color:var(--gold)}  
+.mc{position:absolute;top:13px;right:18px;font-size:20px;cursor:pointer;font-weight:bold;color:#999}  
+.mbl{display:flex;flex-direction:column;gap:9px;margin-top:10px}  
+.mb2{background:#fff;border:2px solid var(--line);padding:12px;font-size:12.5px;text-align:center;cursor:pointer;font-weight:bold;box-shadow:3px 3px 0 var(--line)}  
+.mb2:active{transform:translate(3px,3px);box-shadow:none}  
+.mb2.p{background:var(--ink);color:#fff}.mb2.d{background:var(--red);color:#fff;border-color:#7f1d1d}.mb2.g{background:var(--gold);color:#1a1a2e}  
+.sr{display:flex;align-items:center;margin-bottom:10px;font-size:11px}.sl{width:52px;font-weight:bold}  
+.sb{flex:1;height:10px;background:#fff;border:1px solid var(--line);overflow:hidden;margin:0 8px;border-radius:5px}  
+.sf{height:100%;border-radius:5px}.sv{width:30px;text-align:right;font-weight:bold}  
+.ib{width:100%;padding:13px;border:2px solid var(--line);font-size:14px;margin-top:10px;text-align:center;background:#fff;outline:none;font-family:monospace}  
+.stc{max-height:50vh;overflow-y:auto;font-size:13px;line-height:2;padding-right:8px;margin-bottom:12px}  
+.stc p{margin-bottom:8px;text-indent:2em;color:#333}.stc p:first-child{text-indent:0}  
+textarea.ta{width:100%;min-height:90px;border:2px solid var(--line);font-size:11px;font-family:monospace;padding:8px;background:#fff;resize:vertical}  
+.slot{display:flex;justify-content:space-between;align-items:center;background:#fff;border:2px solid var(--line);padding:10px 12px;box-shadow:3px 3px 0 var(--line)}  
+.slot .sn{font-weight:bold;font-size:12px}.slot .sd{font-size:10px;color:#888;margin-top:3px}.slot .sa{display:flex;gap:6px}  
+.sbtn{border:1.5px solid var(--line);background:#fff;font-size:11px;font-weight:bold;padding:6px 9px;cursor:pointer}  
+.sbtn.p{background:var(--ink);color:#fff}.sbtn.d{color:var(--red)}  
+/* 病娇特效 */  
+.flash-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,0,0,0.95);z-index:999999;overflow:hidden;display:none}  
+.flash-text{position:absolute;color:#ff0000;font-weight:900;white-space:nowrap;font-family:"Courier New",monospace;animation:crazyJump 0.15s infinite alternate,crazyBlink 0.1s infinite;text-shadow:0 0 10px #ff0000,0 0 20px #ff0000}  
+@keyframes crazyJump{from{transform:translateY(0) scale(1)}to{transform:translateY(-15px) scale(1.1)}}  
+@keyframes crazyBlink{0%,100%{opacity:1}50%{opacity:0.1}}  
+</style>  
+</head>  
+<body>  
+<div class="app">  
+  <div class="hd">  
+    <div class="row1"><div><h1>NIGHTINGALE 夜莺账簿<span class="by">by Rain</span></h1><div class="sub">日本 · 霓虹街 · 牛郎俱乐部</div></div><span class="tg" id="lt">⭐</span></div>  
+    <div class="tags"><span class="tg" id="tt">第1年 3月 上旬</span><span class="tg" id="st">春季</span><span class="tg" id="ht2">人气 0</span><span class="tg" id="rt">口碑 0</span><span class="tg" id="lq">酒水 20</span><span class="tg" id="hl">健康 100</span><span class="tg" id="ct">现金 500万</span><span class="tg" id="at">行动 7/7</span></div>  
+    <div class="debtbar"><span class="lb" id="dbt">负债 5000万</span><div class="db"><div class="df" id="dfill" style="width:100%"></div></div><span class="rt" id="dl">期限 剩18旬</span></div>  
+  </div>  
+  <div class="mn" id="mn"><div class="lc" id="lc"><h2>📜 事迹记录</h2><div id="log"></div></div><div class="grid" id="tab"></div></div>  
+  <div class="bt">  
+    <div class="bn" id="bn">  
+      <button class="nb a" data-tab="home"><span class="ic">🏠</span>首页</button><button class="nb" data-tab="staff"><span class="ic">👥</span>牛郎</button><button class="nb" data-tab="shop"><span class="ic">🍾</span>经营</button><button class="nb" data-tab="market"><span class="ic">🌆</span>街道</button><button class="nb" data-tab="logs"><span class="ic">📖</span>日志</button><button class="nb" data-tab="stats"><span class="ic">📊</span>属性</button>  
+    </div>  
+    <div class="ba"><button class="bn2 be" id="be">⏳ 结束本旬</button><button class="bn2" id="bs">💾 存档</button><button class="bn2" id="br">🔄 重开</button></div>  
+  </div>  
+</div>  
+<div class="mo" id="mo"><div class="mb"><span class="mc" id="mc">✕</span><h3 class="mt" id="mt2">提示</h3><div id="mc2"></div></div></div>  
+  
+<script>  
+var $=function(id){return document.getElementById(id);};  
+var NP=["尼古拉斯","亚历克斯","藤原","佐藤","卢卡","威廉","詹姆斯","李","金","木村","宋","朴","安德烈","马特奥","提莫西"],PP=["温柔","偏执","傲娇","病娇","理性","白切黑","狼狗","谋士","笑面疯批","桀骜不驯"],NAP=["日本","韩国","法国","意大利","美国","英国","德国","俄罗斯","西班牙","混血"];  
+var rN=function(){var n=NP[Math.floor(Math.random()*NP.length)],a=0;while(st.staff.some(function(s){return s.name===n;})&&a++<60)n=NP[Math.floor(Math.random()*NP.length)];return n;};  
+var rNat=function(){return NAP[Math.floor(Math.random()*NAP.length)];},rPer=function(){return PP[Math.floor(Math.random()*PP.length)];};  
+var rnd=function(arr){return arr[Math.floor(Math.random()*arr.length)];};  
+var EX_PER=["偏执","病娇","狼狗","白切黑"][Math.floor(Math.random()*4)];  
+  
+var st={playerName:"",playerPersonality:"",date:"第1年 3月 上旬",season:"春季",shopLevel:1,shopLevelName:"⭐",heat:0,reputation:0,liquor:20,health:100,consecutiveActions:0,hasRested:false,weekCount:1,noRestWeeks:0,exploreCount:0,cash:500,debt:5000,interestRate:0.02,deadlineWeek:18,ap:7,maxAp:7,tab:"home",npc:null,staff:[],gameOver:false,prologueDone:false,storyPlayed:[],weekActions:[],_lastActs:[],flags:{},creditor:"金爷"};  
+var exBF=function(){return st.staff.find(function(s){return s.role==="前男友";});};  
+  
+function initStaff(){  
+  st.staff=[  
+    {id:"s1",name:rN(),role:"前男友",age:21,nationality:"日本",personality:EX_PER,face:98,ability:85,favor:90,loyalty:95,mental:15,obsession:30,status:"在岗",desc:"你的前男友。为你放下一切来到店里，眼神永远追随着你。",puaCount:0,money:500,diary:[],lastSought:-1,diaryCount:0},  
+    {id:"s2",name:rN(),role:"普通员工",age:22,nationality:rNat(),personality:rPer(),face:75,ability:60,favor:40,loyalty:30,mental:0,obsession:0,status:"在岗",desc:"略显懒散，但对你有那么一点说不清的心思。",puaCount:0,money:200,diary:[],lastSought:-1,diaryCount:0},  
+    {id:"s3",name:rN(),role:"普通员工",age:19,nationality:rNat(),personality:rPer(),face:82,ability:78,favor:55,loyalty:65,mental:0,obsession:0,status:"在岗",desc:"新人里最有潜力的一位，看你的眼神日渐发亮。",puaCount:0,money:300,diary:[],lastSought:-1,diaryCount:0}  
+  ];  
+}  
+function norm(){  
+  st.staff=(Array.isArray(st.staff)?st.staff:[]).map(function(s){s.favor=+s.favor||0;s.loyalty=+s.loyalty||0;s.face=+s.face||50;s.ability=+s.ability||50;s.mental=+s.mental||0;s.obsession=+s.obsession||0;s.money=+s.money||0;s.puaCount=+s.puaCount||0;s.age=+s.age||20;s.diary=s.diary||[];s.lastSought=s.lastSought||-1;s.diaryCount=+s.diaryCount||0;if(!s.status)s.status="在岗";if(!s.name)s.name=rN();if(!s.role)s.role="普通员工";return s;});  
+  var def={cash:500,debt:5000,health:100,ap:7,maxAp:7,weekCount:1,heat:0,reputation:0,liquor:20,shopLevel:1,deadlineWeek:18,interestRate:0.02,exploreCount:0,noRestWeeks:0};  
+  for(var k in def){if(isNaN(+st[k]))st[k]=def[k];}  
+  st.weekActions=st.weekActions||[];st.storyPlayed=st.storyPlayed||[];st._lastActs=st._lastActs||[];st.flags=st.flags||{};if(!st.tab)st.tab="home";  
+}  
+var emo=function(s){return s.mental>=80?{t:"崩溃边缘",c:"#c62828"}:s.favor>=100?{t:"痴狂",c:"#c62828"}:s.favor>=85?{t:"痴迷",c:"#b58c52"}:s.favor>=65?{t:"心动",c:"#e07a5f"}:s.favor>=45?{t:"依恋",c:"#e8a87c"}:s.loyalty<25?{t:"疏远",c:"#999"}:{t:"平静",c:"#6f9e6f"};};  
+var emoB=function(s){var e=emo(s);return '<span class="em" style="color:'+e.c+';border-color:'+e.c+'">'+e.t+'</span>';};  
+var mem=function(s,txt){s.diary=s.diary||[];s.diary.unshift(st.date+" "+txt);if(s.diary.length>20)s.diary.pop();};  
+var fill=function(t){if(t==null)return "";var ex=exBF(),top=st.staff.slice().sort(function(a,b){return b.favor-a.favor;})[0];return String(t).replace(/\{p\}/g,st.playerName).replace(/\{ex\}/g,ex?ex.name:"承欢").replace(/\{cr\}/g,st.creditor).replace(/\{emp\}/g,top?top.name:"员工").replace(/\{debt\}/g,st.debt).replace(/\{cash\}/g,st.cash);};  
+var om=function(t,h){$("mt2").innerText=t;$("mc2").innerHTML=h;$("mo").classList.add("s");},cm=function(){$("mo").classList.remove("s");};  
+var bar=function(l,v,c){return '<div class="sr"><span class="sl">'+l+'</span><div class="sb"><div class="sf" style="width:'+Math.min(100,Math.max(0,v))+'%;background:'+c+'"></div></div><span class="sv">'+Math.round(v)+'</span></div>';};  
+var log=function(t,c){var la=$("log");if(!la)return;var p=document.createElement("p");p.className=c||"gy";p.innerText=t;la.appendChild(p);la.scrollTop=la.scrollHeight;};  
+function toast(m,e){var t=document.createElement("div");t.innerText=m;t.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;color:#fff;padding:12px 22px;border:2px solid '+(e?'#c62828':'#b58c52')+';font-size:14px;z-index:99999;text-align:center;opacity:0;transition:.2s;pointer-events:none;width:70%;max-width:300px;font-weight:bold;border-radius:4px';document.body.appendChild(t);setTimeout(function(){t.style.opacity="1";},10);setTimeout(function(){t.style.opacity="0";setTimeout(function(){t.remove();},300);},1100);}  
+  
+function askName(){om("给你的角色起个名字",'<div style="text-align:center"><p style="font-size:13px;color:#555;margin-bottom:10px">十七岁的你，继承了濒临倒闭的牛郎俱乐部「夜莺」。<br>还有一笔五千万的高利贷。</p><input id="pn" class="ib" placeholder="请输入你的名字" maxlength="10" onkeydown="if(event.key===\'Enter\')saveName()"><div class="mb2 p" style="margin-top:15px" onclick="saveName()">下一步</div></div>');}  
+function saveName(){var el=$("pn"),v=el?el.value.trim():"";if(!v)return toast("名字不能为空！",1);st.playerName=v;cm();setTimeout(askPer,200);}  
+function askPer(){om("选择性格",'<div style="text-align:center"><p style="font-size:13px;color:#555;margin-bottom:15px">你的性格将影响员工对你的态度：</p><div class="mbl"><div class="mb2" onclick="savePer(\'懦弱\')">😳 懦弱（忠诚↑ PUA↑ 索财↓）</div><div class="mb2" onclick="savePer(\'精明\')">🧠 精明（索财↑ 好感↓）</div><div class="mb2" onclick="savePer(\'高冷\')">🥶 高冷（忠诚↑ 索财↑ PUA↓）</div><div class="mb2" onclick="savePer(\'温柔\')">🌷 温柔（好感↑ 忠诚↑ 索财↓）</div></div></div>');}  
+function savePer(p){st.playerPersonality=p;cm();log("["+st.date+"] 你以【"+st.playerName+"】的身份接手了夜莺俱乐部，性格：【"+p+"】。","gd");render();toast("欢迎，"+st.playerName+"！");setTimeout(prologue,300);}  
+  
+var MAIN=[  
+{id:"p",title:"第一章 · 继承之夜",cond:function(){return !st.prologueDone;},text:"深夜，霓虹街的雨下个不停。\n\n你攥着那份泛黄的转让契约，站在「夜莺俱乐部」的霓虹招牌下。三天前，你唯一的亲人——经营这家牛郎店的姑妈，留下这间店和五千万的高利贷，永远闭上了眼。你只有十七岁。\n\n推开门，昏暗的大厅里酒气未散。三名男员工围了上来，为首的【{ex}】愣在原地，随即快步走到你面前，眼眶泛红：\"你来了……我就知道你会来。\"\n\n他是你的前男友。两年前你们分手，他离家出走，成了这家店最红的牛郎。如今他眼里有千言万语，却只低声说：\"我会帮你。\"\n\n话音刚落，店门被一脚踹开。\n\n一个叼着雪茄、戴着金链的男人带着四个打手走进来——【{cr}】，放高利贷的债主。他把一沓借据拍在吧台上：\"小丫头，你姑妈欠我的钱，连本带利五千万。我给你两条路——要么还钱，要么，把这间店、还有你自己，都抵给我。\"\n\n【{ex}】把你护在身后，声音发冷：\"她还小。钱，我来还。\"\n\n{cr}哈哈大笑：\"你一个卖笑的牛郎，拿什么还？\"",opts:[  
+  {t:"🔥 挺直腰板立下军令状：六个月连本带利还清！",e:function(){st.deadlineWeek=18;st.interestRate=0.02;st.heat+=10;st.flags.respect=true;var ex=exBF();if(ex){ex.loyalty=Math.min(100,ex.loyalty+10);ex.favor=Math.min(100,ex.favor+5);mem(ex,"被你的骨气打动，对你刮目相看");}log("[主线] 你立下军令状：六个月内还清所有债务。"+st.creditor+"眯起眼，第一次正眼看你。","gd");st.staff.forEach(function(s){s.mental=Math.min(100,s.mental+3);});}},  
+  {t:"🥺 低声下气，求{cr}再宽限些……",e:function(){st.deadlineWeek=27;st.interestRate=0.03;st.reputation-=5;var ex=exBF();if(ex){ex.favor=Math.min(100,ex.favor+8);ex.mental=Math.min(100,ex.mental+12);mem(ex,"看着你被羞辱，心如刀割，保护欲疯长");}log("[主线] 你低声下气换来九个月期限，但利息涨到三成。员工们看在眼里，有人心疼，有人失望。","rd");}},  
+  {t:"💔 看向【{ex}】：……帮帮我。",e:function(){st.interestRate=0.025;st.deadlineWeek=18;st.flags.exShield=true;var ex=exBF();if(ex){ex.obsession=Math.min(100,ex.obsession+20);ex.favor=Math.min(100,ex.favor+10);ex.mental=Math.min(100,ex.mental+10);mem(ex,"为你签下连带保证，心甘情愿陪你下地狱");}log("[主线] 承欢为你挡在债主面前，签下连带保证。他说：\"要还，一起还。\"","gd");}}  
+]},  
+{id:"c1",title:"第二章 · 债主通牒",cond:function(){return st.weekCount>=4;},text:"本旬刚开始，四个黑衣打手就堵在了夜莺俱乐部门口。为首的光头把一张纸条拍进你手心，上面是{cr}的字迹：\n\n\"小丫头，第一期利息到期了。本息共 {debt} 万，你打算怎么还？\"\n\n店里瞬间安静下来，客人们窃窃私语，员工们紧张地看向你。【{ex}】不动声色地站到你身后，手已经按在了吧台下的酒瓶上。",opts:[  
+  {t:"💰 老实还清当期利息（需支付 100 万起）",e:function(){var due=Math.floor(st.debt*st.interestRate);if(st.cash>=due){st.cash-=due;st.debt-=due;log("[主线] 你按时还上"+due+"万利息，"+st.creditor+"勉强满意。","gd");st.reputation+=5;}else{st.debt+=Math.floor(st.debt*0.02);log("[主线] 你连利息都还不上，只能借新还旧，负债滚大。","rd");st.flags.debtAnger=true;}}},  
+  {t:"😤 硬碰硬：\"钱没有，命一条！\"",e:function(){st.debt+=200;st.heat-=5;st.flags.debtAnger=true;var ex=exBF();if(ex){ex.mental=Math.min(100,ex.mental+12);mem(ex,"担心你冲动，整夜守在你门外");}log("[主线] 你硬顶了回去。打手砸碎了门口一扇玻璃，罚息200万记在了账上。","rd");}},  
+  {t:"🎭 让【{ex}】去周旋拖延",e:function(){st.heat+=5;var ex=exBF();if(ex){ex.obsession=Math.min(100,ex.obsession+10);ex.mental=Math.min(100,ex.mental+10);mem(ex,"为你低声下气去求人，回来后只说'没事'");}log("[主线] 承欢出面周旋，勉强稳住债主，但他也被羞辱了一番。","gy");}}  
+]},  
+{id:"c2",title:"第三章 · 嫉妒之火",cond:function(){return st.weekCount>=3&&st.staff.filter(function(s){return s.role!=="前男友"&&s.favor>=55;}).length>=1;},text:"本旬店里出了事。\n\n两名员工在你面前大打出手，起因竟是——你多看了谁一眼。桌上的香槟碎了一地，客人被吓得纷纷离场。\n\n\"老板本来就该多看看我！\"\n\n\"呵，你也不照照镜子，凭什么？\"\n\n【{ex}】冷眼站在一旁，没有上前劝架。他的目光始终钉在你身上，像在等你做出选择。",opts:[  
+  {t:"💔 偏袒【{ex}】，呵斥其他人",e:function(){var ex=exBF();if(ex){ex.favor=Math.min(100,ex.favor+10);mem(ex,"你当众偏向他，他眼底有藏不住的笑意");}st.staff.filter(function(s){return s.role!=="前男友";}).forEach(function(s){s.favor=Math.max(0,s.favor-12);s.loyalty=Math.max(0,s.loyalty-8);mem(s,"嫉妒与失落交加，觉得你不公平");});log("[主线] 你公开偏袒承欢，其他员工心生芥蒂，忠诚度下滑。","gy");}},  
+  {t:"⚖️ 各打五十大板，谁也不偏袒",e:function(){st.staff.forEach(function(s){s.loyalty=Math.min(100,s.loyalty+5);if(s.favor>=55)s.favor=Math.max(0,s.favor-5);mem(s,"佩服你的公正，收起了小心思");});st.reputation+=5;log("[主线] 你一碗水端平，员工们服气，店铺风气好转。","gd");}},  
+  {t:"🎯 拉偏架，偏袒业绩最好的那个",e:function(){var top=st.staff.slice().sort(function(a,b){return b.ability-a.ability;})[0];if(top){top.favor=Math.min(100,top.favor+10);mem(top,"你偏向他，他激动得一夜没睡");}st.staff.filter(function(s){return s!==top;}).forEach(function(s){s.favor=Math.max(0,s.favor-8);mem(s,"心里泛酸，觉得你太现实");});st.heat+=5;log("[主线] 你偏袒业绩最好的员工，生意没受影响，但暗流更汹涌了。","gy");}}  
+]},  
+{id:"c3",title:"第四章 · 痴狂告白",cond:function(){return st.weekCount>=6&&st.staff.some(function(s){return s.favor>=95;});},text:"打烊后，【{emp}】没有走。\n\n他堵在办公室门口，双眼通红，手里攥着这一周所有的提成，声音在发抖：\n\n\"老板，我受不了了。\"\n\n他一步步逼近，把你困在办公桌与他之间：\"我把命都给你了，你为什么总是不肯多看我一眼？\"\n\n他的眼神滚烫又病态，像要把你整个人吞下去。",opts:[  
+  {t:"🌧️ 温柔安抚，但划清界限",e:function(){var s=st.staff.find(function(x){return x.favor>=95;});if(s){s.favor=Math.max(0,s.favor-8);s.mental=Math.max(0,s.mental-15);s.loyalty=Math.min(100,s.loyalty+5);mem(s,"被你温柔地拒绝，痛苦却更坚定了");}log("[主线] 你安抚了他，却不肯给承诺。他红着眼退了出去。","gy");}},  
+  {t:"❤️ 接受他的感情",e:function(){var s=st.staff.find(function(x){return x.favor>=95;});if(s){s.favor=100;s.obsession=Math.min(100,s.obsession+15);s.loyalty=Math.min(100,s.loyalty+10);mem(s,"得到你的回应，从此痴狂不可收拾");}st.staff.filter(function(x){return x!==s&&x.role==="前男友";}).forEach(function(x){x.favor=Math.max(0,x.favor-15);x.mental=Math.min(100,x.mental+10);mem(x,"得知你选择了别人，心如刀绞");});log("[主线] 你回应了他的感情。有人幸福，有人心碎。","gd");}},  
+  {t:"💰 利用他的痴狂，顺势索财",e:function(){var s=st.staff.find(function(x){return x.favor>=95;});if(s){var m=s.money;st.cash+=m;s.money=0;s.obsession=Math.min(100,s.obsession+20);s.mental=Math.min(100,s.mental+15);mem(s,"为了你掏空一切，还觉得不够");}log("[主线] 你利用他的痴狂，榨干了他的积蓄。他甘之如饴。","gd");}}  
+]},  
+{id:"c4",title:"第五章 · 承欢的秘密",cond:function(){return st.weekCount>=7;},text:"隔壁「极乐」夜总会的老板找上门来。他西装革履，笑得像只狐狸，当着你的面挖角：\n\n\"【{ex}】，跟着她，你只会被高利贷拖死。到我这儿来，我帮你还债，条件只有一个——离开她。\"\n\n你这才知道，原来【{ex}】为了你，已经推掉了三次这样的邀约。\n\n他背对着你，肩膀绷得笔直，迟迟没有开口。",opts:[  
+  {t:"🌹 真诚挽留他",e:function(){var ex=exBF();if(ex){ex.favor=Math.min(100,ex.favor+10);ex.loyalty=Math.min(100,ex.loyalty+10);mem(ex,"被你一句话留住，眼眶瞬间就红了");}log("[主线] 你说了句\"我需要你\"。他转身，声音哽咽：\"我哪都不去。\"","gd");}},  
+  {t:"🕊️ 放他自己选",e:function(){var ex=exBF();if(ex){ex.obsession=Math.min(100,ex.obsession+15);mem(ex,"你没有逼他，他却更离不开你");}log("[主线] 你没有逼迫。他沉默很久，最终对那人说：\"我生是她的人，死是她的鬼。\"","gd");}},  
+  {t:"💼 逼他动用家族关系帮你还债",e:function(){st.cash+=800;st.debt=Math.max(0,st.debt-500);var ex=exBF();if(ex){ex.favor=Math.max(0,ex.favor-12);ex.mental=Math.min(100,ex.mental+18);mem(ex,"被你利用，心一点点冷下去");}log("[主线] 你逼他去求早已决裂的家族。钱到手了，他看你的眼神却多了几分痛苦。","rd");}}  
+]},  
+{id:"c5",title:"第六章 · 背叛的利刃",cond:function(){return st.weekCount>=8&&st.staff.some(function(s){return s.role!=="前男友"&&(s.loyalty<=22||s.mental>=70);});},text:"店里出了内鬼。\n\n你的一批名贵酒水被低价卖给了「极乐」，客人名单也泄露了出去。查到最后，所有线索都指向了店里最可能对你心生怨怼的那个人。\n\n他站在后门，身边放着一个收拾好的行李箱，看见你来，先是一愣，随即冷笑：\"对，是我干的。你眼里从来就没有我。\"",opts:[  
+  {t:"🚫 当场揭穿并开除他",e:function(){var s=st.staff.find(function(x){return x.role!=="前男友"&&(x.loyalty<=22||x.mental>=70);});if(s){st.staff=st.staff.filter(function(x){return x.id!==s.id;});log("[主线] 你开除了内鬼【"+s.name+"】。","rd");}st.heat+=10;st.reputation+=5;}},  
+  {t:"🤝 给他一次赎罪的机会",e:function(){var s=st.staff.find(function(x){return x.role!=="前男友"&&(x.loyalty<=22||x.mental>=70);});if(s){s.loyalty=Math.min(100,s.loyalty+25);s.favor=Math.min(100,s.favor+10);mem(s,"被你原谅，从此死心塌地");}st.reputation-=5;log("[主线] 你放过了他。他跪在地上泣不成声，发誓用命报答。","gd");}},  
+  {t:"🕵️ 策反他做双面间谍",e:function(){var s=st.staff.find(function(x){return x.role!=="前男友"&&(x.loyalty<=22||x.mental>=70);});if(s){s.loyalty=Math.min(100,s.loyalty+15);mem(s,"成了你的暗线，游走于刀尖之上");}st.heat+=15;st.cash-=100;log("[主线] 你花100万策反了他，让他反卧底极乐。","gd");}}  
+]}  
+];  
+  
+var prologue=function(){st.prologueDone=false;runStory("p");};  
+function runStory(id){var ch=MAIN.find(function(c){return c.id===id;});if(!ch)return;var h='<div class="stc">'+fill(ch.text).split("\n").map(function(p){return p.trim()?"<p>"+p+"</p>":"";}).join("")+'</div><div class="mbl">';ch.opts.forEach(function(o,i){h+='<div class="mb2" onclick="doOpt(\''+ch.id+'\','+i+')">'+fill(o.t)+'</div>';});h+='</div>';om("【主线】"+ch.title,h);}  
+function doOpt(id,i){cm();var ch=MAIN.find(function(c){return c.id===id;});if(!ch||!ch.opts[i])return;ch.opts[i].e();if(id==="p")st.prologueDone=true;if(st.storyPlayed.indexOf(id)===-1)st.storyPlayed.push(id);if(st.gameOver)return;toast("选择已生效");render();}  
+  
+function weeklyStory(){if(st.gameOver)return;if(st.weekCount>=st.deadlineWeek&&st.debt>0)return finalShowdown();var ch=MAIN.find(function(c){return c.id!=="p"&&st.storyPlayed.indexOf(c.id)===-1&&c.cond();});if(ch){runStory(ch.id);return;}dynamicInterlude();}  
+function dynamicInterlude(){  
+  var acts=st._lastActs||[];var text="",opts=[];  
+  if(acts.indexOf("索财")!==-1){text="本旬你向员工伸了手，要走了他们的血汗钱。夜里你翻着账簿，却总想起他们递钱时那复杂的眼神。\n\n有人甘之如饴，有人强颜欢笑。俱乐部的霓虹灯下，金钱与感情的界限越来越模糊。";opts=[{t:"🌙 装睡，不去想",e:function(){log("[插曲] 你选择了麻木。有些债，迟早要还。","gy");}},{t:"💭 记下每个人的表情",e:function(){st.staff.forEach(function(s){s.obsession=Math.min(100,(s.obsession||0)+3);});log("[插曲] 你记住了他们献出一切时的表情，也在他们心里刻下更深的执念。","gy");}}];}  
+  else if(acts.indexOf("休息")!==-1){text="你难得地让自己喘了口气。【{ex}】悄悄给你送来一杯热牛奶，什么也没说，只坐在门边守着你。\n\n\"其实你不用那么拼。\"他的声音很轻，像怕惊扰了夜。\n\n灯光把他的影子拉得很长，长到足够把你圈进去。";opts=[{t:"☕ 接过牛奶，道声谢",e:function(){var ex=exBF();if(ex){ex.favor=Math.min(100,ex.favor+5);mem(ex,"你接过牛奶的那一刻，他开心得像个孩子");}log("[插曲] 一杯热牛奶，让两颗疲惫的心靠近了一点。","gd");}},{t:"❄️ 冷冷一句：别管我",e:function(){var ex=exBF();if(ex){ex.mental=Math.min(100,ex.mental+8);mem(ex,"被你的冷漠刺伤，却更不肯放手");}log("[插曲] 你的冷漠没有赶走他，反而让他更加偏执。","rd");}}];}  
+  else if(acts.indexOf("调情")!==-1||acts.indexOf("PUA")!==-1){text="本旬你与员工们周旋于情场。有人为你的一句话彻夜难眠，有人因你的忽冷忽热而辗转反侧。\n\n牛郎店的夜里，最贵的是酒，最危险的，是人心。";opts=[{t:"😏 享受这份掌控感",e:function(){st.staff.forEach(function(s){s.obsession=Math.min(100,(s.obsession||0)+5);});log("[插曲] 你享受被需要的感觉，也在不知不觉间，点燃了更多执念。","gy");}},{t:"😔 心里其实很不安",e:function(){st.health=Math.max(0,st.health-5);log("[插曲] 你为玩弄他人感情而隐隐不安，健康-5。","rd");}}];}  
+  else if(acts.length===0){text="本旬你几乎什么都没做，只是日复一日地对着账本发呆。\n\n债务像雪球一样越滚越大，而员工们的目光却越来越热。这个店，到底会走向何方？";opts=[{t:"🔥 振作起来！",e:function(){st.heat+=5;log("[插曲] 你拍拍脸，决定下一旬加倍努力。","gd");}},{t:"🕳️ 继续沉沦",e:function(){st.reputation-=3;log("[插曲] 你在迷茫中又浪费了一旬。","rd");}}];}  
+  else{text="霓虹街的夜从不睡觉。你站在吧台后，看着员工们像蝴蝶一样穿梭在客人之间，忽然分不清，这灯红酒绿里，谁是猎物，谁又是猎人。";opts=[{t:"🍷 喝一杯，醒着看这世界",e:function(){log("[插曲] 你啜了一口酒，把心事压回心底。","gy");}},{t:"📖 翻看员工档案",e:function(){var s=st.staff.slice().sort(function(a,b){return b.favor-a.favor;})[0];if(s){s.obsession=Math.min(100,(s.obsession||0)+2);mem(s,"被你在暗处静静注视，他似有所感");}log("[插曲] 你翻看着档案，记住了每一个名字、每一份心意。","gy");}}];}  
+  var h='<div class="stc">'+fill(text).split("\n").map(function(p){return p.trim()?"<p>"+p+"</p>":"";}).join("")+'</div><div class="mbl">';opts.forEach(function(o,i){h+='<div class="mb2" onclick="doInter('+i+')">'+fill(o.t)+'</div>';});h+='</div>';st._inter=opts;om("【日常】第 "+st.weekCount+" 旬 · 夜莺杂记",h);  
+}  
+var doInter=function(i){cm();var o=st._inter&&st._inter[i];if(!o)return;o.e();toast("已记录");render();};  
+  
+function finalShowdown(){  
+  if(st.storyPlayed.indexOf("final")!==-1)return;st.storyPlayed.push("final");  
+  var text="本旬，{cr}带着全部打手，把夜莺俱乐部围了个水泄不通。\n\n他叼着雪茄，把账本摔在你面前：\"小丫头，期限到了。连本带利 {debt} 万，今天，一个子儿都不能少。\"\n\n霓虹灯依旧闪烁，但这一次，连风都像屏住了呼吸。你身后，员工们慢慢围了上来。\n\n【{ex}】的手，轻轻握住了你的手。";var opts=[];  
+  if(st.cash>=st.debt){opts.push({t:"💵 当场还清所有债务（现金 "+st.cash+" 万）",e:function(){st.cash-=st.debt;st.debt=0;ending("还债结局 · 无债一身轻","你数清了每一张钞票，当着所有人的面，把五千万的债还清了。\n\n{cr}愣了很久，最后摘下雪茄，朝你竖起大拇指：\"丫头，有种。这霓虹街，以后有你一席之地。\"\n\n他带着打手离开。你回头，员工们的眼里满是骄傲，而【{ex}】站在人群后，眼眶通红，笑得比谁都好看。\n\n从此，夜莺俱乐部不再是还债的工具。它是你的王国，而他是你的骑士。","good");}});}  
+  opts.push({t:"🏠 卖掉店铺还债，从头再来",e:function(){st.debt=0;ending("还债结局 · 散场","你把夜莺俱乐部抵了出去，还清了所有的债。\n\n签合同的那一刻，你的手没有抖。失去一切，反而让你前所未有的轻松。\n\n【{ex}】没有怪你，他只说：\"店没了没关系，我还在。我们从头再来。\"\n\n霓虹街的雨又下了起来，但你手里，握着一只温暖的手。","neutral");}});  
+  opts.push({t:"💞 让员工们一起凑钱（他们已为你攒下 "+st.staff.reduce(function(a,s){return a+s.money;},0)+" 万）",e:function(){var sum=st.staff.reduce(function(a,s){return a+s.money;},0);st.staff.forEach(function(s){s.money=0;});if(sum>=st.debt){st.cash+=sum-st.debt;st.debt=0;ending("还债结局 · 众志成城","没有人犹豫。\n\n员工们把各自的存折、现金、甚至藏在鞋底的私房钱，全都推到了你面前。\n\n\"老板，我们的命都是你给的。这点钱算什么。\"\n\n你看着他们一张张真诚而痴迷的脸，忽然明白，原来你早已不是一个人在扛。\n\n这笔债，是被一群爱着你的人，一起还清的。","good");}else{st.cash+=sum;st.debt-=sum;ending("血色结局 · 杯水车薪","员工们掏空了所有，却仍填不满那笔巨债的窟窿。\n\n{cr}冷笑着，一挥手，打手们砸烂了店里的一切。\n\n在混乱中，【{ex}】死死护住你，替你挡下了砸来的酒瓶。他的血，温热的，滴在你脸上。\n\n霓虹灯终于熄灭了。","bad");}}});  
+  opts.push({t:"💀 抵上自己，换取所有人的平安",e:function(){ending("囚禁结局 · 交易","你平静地走上前，对{cr}说：\"放过他们。我跟你走。\"\n\n身后爆发出一片\"不要\"的嘶吼。【{ex}】冲上来要拦，被三个打手死死按住。\n\n你最后看了他一眼，转身走进那辆黑色的车。\n\n从此，霓虹街少了一个叫夜莺的俱乐部，而你，成了{cr}的笼中鸟。\n\n有人说，曾在深夜看见一个男人，疯子一样找遍了整条霓虹街，喊着一个名字。","bad");}});  
+  var h='<div class="stc">'+fill(text).split("\n").map(function(p){return p.trim()?"<p>"+p+"</p>":"";}).join("")+'</div><div class="mbl">';opts.forEach(function(o,i){h+='<div class="mb2" onclick="finalOpt('+i+')">'+fill(o.t)+'</div>';});h+='</div>';st._final=opts;om("【主线】终章 · 摊牌",h);  
+}  
+var finalOpt=function(i){cm();var o=st._final&&st._final[i];if(!o)return;o.e();};  
+function ending(title,story,type){st.gameOver=true;cm();setTimeout(function(){om("夜莺账簿 · 终",'<div style="text-align:center;padding:8px 0"><h2 style="font-size:22px;color:'+(type==="bad"?"#c62828":"#b58c52")+';margin-bottom:18px">'+(type==="good"?"✨ 圆满":"📖 落幕")+'</h2><p style="font-size:16px;font-weight:bold;margin-bottom:14px">'+title+'</p><div class="stc">'+fill(story).split("\n").map(function(p){return p.trim()?"<p>"+p+"</p>":"";}).join("")+'</div><div class="mbl" style="margin-top:15px"><div class="mb2 p" onclick="doReset()">重新开始</div></div></div>');},150);}  
+function triggerEnd(s){st.gameOver=true;var pn=st.playerName,sn=s.name,sp=s.personality,sf=s.favor;var title="",story="";if(sf>=90){if(sp==="精明"||sp==="理性"||sp==="谋士"){if(Math.random()<0.5){title="【疯爱结局 · 自毁】";story="你终于把【"+sn+"】逼到绝境。他太聪明，早看穿了你所有手段。但他没有逃，而是选了最极端的方式——要你永远记住他。\n\n雨夜，他把你叫进最深的包厢，穿着入职时的西装，茶几上摆着两杯红酒。\n\n\"老板，我想和你喝最后一杯。\"他语气平静得可怕。你犹豫着端起酒杯，他突然笑了，笑得凄凉绝望：\"我算计过所有人，唯独算漏了自己的心。\"\n\n他掏出一瓶没有标签的药水，在你惊愕的目光里仰头喝下：\"你囚禁不了我的灵魂。再见了，我唯一的老板。希望我的死，能让你一辈子都忘不掉我。\"\n\n他倒在你怀里，温热的血从嘴角溢出。精明如他，最终用死亡，完成对你最彻底的报复。";}else{title="【疯爱结局 · 囚禁】";story="【"+sn+"】早就做好了万全准备。他太理智，既然得不到你的心，那就用最冷静的方式，把你永远留在身边。\n\n当你想逃时已经太晚。他平静地反锁房门，把钥匙放进自己口袋：\"老板，外面太危险。以后你就在这里办公，我每天给你送饭。\"\n\n\"我知道你会恨我。但我算过，只要三年，你就会习惯。三年不够，那就三十年。\"\n\n理智到极致的囚禁，比疯狂更让人绝望。你成了金丝雀，而他每天都会用最温柔的语气说：\"老板，今天也很爱你。\"";}}else if(sp==="病娇"||sp==="偏执"||sp==="狼狗"){title="【疯爱结局 · 囚禁】";story="【"+sn+"】的爱像一张密不透风的网，最终将你彻底缠绕。\n\n那晚他带着酒气闯进办公室，双眼通红，一把抱住你，力气大得几乎勒断骨头：\"为什么？我为你做了那么多，你为什么就是不爱我？\"\n\n他的眼泪大颗大颗砸在你脖子上。你试图推开他，他却暴怒地扯下领带，将你的双手死死绑住，把你带进早已准备好的地下室。\n\n\"既然你给不了我爱，那就给我恨吧。\"他把你锁进铁笼，眼神是病态的满足，\"只要你还在我身边，恨我也没关系。\"\n\n他用疯狂的爱，为你打造了一座永恒的牢笼。";}else{title="【疯爱结局 · 囚禁】";story="【"+sn+"】终于被你逼疯了。\n\n打烊后他留下，脸上带着诡异的温柔，走到你面前轻抚你的头发：\"老板，别怕，一切都会好起来的。\"你还没来得及反应，一块浸满药水的手帕就捂住了你的口鼻。\n\n醒来时，你躺在一个布置得极其温馨的房间里。墙上贴满你的照片，桌上摆满你爱吃的食物。【"+sn+"】坐在床边，看见你醒来高兴得像个孩子：\"以后这里就是我们的家了。\"\n\n他端来热粥，一勺一勺喂你，眼神是令人毛骨悚然的甜蜜：\"你不说话也没关系。我们有的是时间。\"\n\n你看着窗外被铁栏杆封死的天空，终于明白，你已经被永远囚禁在这座名为\"爱\"的地狱里。";}}else{title="【血色结局 · 反噬】";story="夜色浓得化不开，夜莺俱乐部只剩最后一盏昏黄的吧台灯。\n\n你正准备离开，身后传来沉重的脚步声。你回头，看到【"+sn+"】站在阴影里，手里握着一把锋利的拆信刀。\n\n\"老板，你那样对我的时候，就没想过今天吗？\"他声音沙哑冰冷，\"我为你做了那么多，你把我当什么？随时可丢弃的工具？\"\n\n\"该死的"+pn+"！\"他咆哮着冲上来，一刀刺向你胸口。\n\n剧痛瞬间蔓延，你倒在冰冷的地板上，鲜血染红了木质地砖。你终于明白——你亲手培养的，不仅是一个牛郎，更是一头随时会吞噬你的野兽。";}cm();setTimeout(function(){om("夜莺账簿 · 终",'<div style="text-align:center;padding:8px 0"><h2 style="font-size:22px;color:#c62828;margin-bottom:18px">GAME OVER</h2><p style="font-size:16px;font-weight:bold;margin-bottom:14px">'+title+'</p><div class="stc">'+story.split("\n").map(function(p){return p.trim()?"<p>"+p+"</p>":"";}).join("")+'</div><div class="mbl" style="margin-top:15px"><div class="mb2 p" onclick="doReset()">重新开始</div></div></div>');},150);}  
+  
+var EV=[  
+{t:"🍾 豪客点名",d:"富婆走进大堂，点黑桃A指名前男友。",o:[{t:"让他去陪(钱↑)",e:function(){st.cash+=50;}},{t:"拒绝(好感↓)",e:function(){var s=exBF()||st.staff[0];if(s){s.favor-=10;mem(s,"被你拒绝接客，又失落又窃喜");}}}]},  
+{t:"🏦 债主催收",d:"催收员要求还债。",o:[{t:"还100万",e:function(){if(st.cash>=100){st.cash-=100;st.debt-=100;}}},{t:"拖延(负债+50)",e:function(){st.debt+=50;}}]},  
+{t:"🤒 员工生病",d:"员工高烧，无法接客。",o:[{t:"请医生(-30)",e:function(){if(st.cash>=30){st.cash-=30;var s=st.staff[2]||st.staff[0];if(s){s.favor+=10;mem(s,"你彻夜照顾他，他烧得迷糊却喊你的名字");}}}},{t:"休息(好感↓)",e:function(){var s=st.staff[2]||st.staff[0];if(s){s.favor-=5;mem(s,"你放任他自生自灭，他心凉了半截");}}}]},  
+{t:"🥂 香槟塔",d:"豪客要开香槟塔。",o:[{t:"接下(+500)",e:function(){st.cash+=500;}},{t:"推掉(好感↓)",e:function(){var s=exBF()||st.staff[0];if(s)s.favor-=5;}}]},  
+{t:"💸 客人逃单",d:"客人喝霸王酒跑了。",o:[{t:"自认倒霉(-80)",e:function(){if(st.cash>=80)st.cash-=80;}},{t:"黑服追查(人气+5)",e:function(){st.heat+=5;}}]},  
+{t:"📦 意外之财",d:"清扫包厢时发现客人遗落的名表。",o:[{t:"卖掉(+120)",e:function(){st.cash+=120;}},{t:"交给警方(口碑+5)",e:function(){st.reputation+=5;}}]}  
+];  
+  
+var tabs=function(){  
+  var d={home:[{id:"feed",i:"🍸",t:"调制酒水",d:"补充大量库存",c:"行动点-1"},{id:"care",i:"💊",t:"安抚员工",d:"降低痴狂度，提升好感",c:"行动点-1"},{id:"train",i:"📖",t:"培训员工",d:"花费200万提升能力",c:"行动点-1"},{id:"rest",i:"🛏️",t:"休息养神",d:"恢复健康，重置过劳",c:"行动点-1"}],shop:[{id:"recruit",i:"📝",t:"招聘",d:"寻找新牛郎",c:"行动点-1"},{id:"promote",i:"📢",t:"宣传",d:"提高人气与口碑",c:"行动点-1"},{id:"upgrade",i:"🏢",t:"装修升级",d:"提升店铺等级与收益",c:"查看详情"}],staff:[],market:[{id:"explore",i:"🔍",t:"探索奇遇",d:"寻找高资质路人",c:"行动点-1"},{id:"event",i:"🎲",t:"随机事件",d:"触发随机剧情",c:"行动点-1"}],logs:[{id:"viewlogs",i:"📖",t:"员工工作日志",d:"查看员工近期的心声与状态",c:"点击查看"}],stats:[{id:"stat1",i:"👤",t:"我",d:"查看个人信息",c:""},{id:"debtinfo",i:"🏦",t:"债务详情",d:"查看还款计划",c:""}]};  
+  if(st.debt>0)d.market.push({id:"loan",i:"🏦",t:"偿还贷款",d:"每月须还本息",c:"行动点-1"});  
+  st.staff.forEach(function(s){  
+    if(s.status==="培训中"){  
+      d.staff.push({id:s.id,i:"🚫",t:"【"+s.name+"】",d:"培训中",c:"一周后回归"});  
+    } else {  
+      var statsText = "颜"+s.face+" 能"+s.ability+" 好"+s.favor+" 忠"+s.loyalty+" 痴"+(s.obsession||0)+" 压"+s.mental;  
+      d.staff.push({id:s.id,i:"👤",t:"【"+s.name+"】 "+emoB(s),d:statsText,c:"查看详情"});  
+    }  
+  });  
+  d.staff.push({id:"talk",i:"💬",t:"沟通",d:"调情 / PUA / 索财 / 开除",c:"行动点-1"});  
+  if(st.npc)d.market.unshift({id:"encounter",i:"🌟",t:"奇遇·"+st.npc.name,d:"颜值"+st.npc.face+" 能力"+st.npc.ability,c:"点击互动"});  
+  return d;  
+};  
+function render(){  
+  $("tt").innerText=st.date;$("st").innerText=st.season;$("lt").innerText=st.shopLevelName;$("ht2").innerText="人气 "+st.heat;$("rt").innerText="口碑 "+st.reputation;  
+  var lq=$("lq");lq.innerText="酒水 "+st.liquor;lq.classList.toggle("cr",st.liquor<10);var hl=$("hl");hl.innerText="健康 "+st.health;hl.classList.toggle("cr",st.health<30);  
+  $("ct").innerText="现金 "+st.cash+"万";$("at").innerText="行动 "+st.ap+"/"+st.maxAp;$("dbt").innerText="负债 "+st.debt+"万";$("dfill").style.width=Math.min(100,Math.max(0,st.debt/50))+"%";  
+  var remain=st.deadlineWeek-st.weekCount;$("dl").innerText="期限 "+(remain>0?"剩"+remain+"旬":"已到期！");$("dl").style.color=remain<=3?"#ffb4a2":"#eee";  
+  $("lc").style.display=st.tab==="home"?"flex":"none";var items=tabs()[st.tab]||[];  
+  $("tab").innerHTML=items.map(function(x){return '<div class="ac '+(x.c==="一周后回归"?"tr":"")+'" data-id="'+x.id+'"><div class="aci">'+x.i+'</div><div class="aci2"><div class="act">'+x.t+'</div><div class="acd">'+x.d+'</div><div class="acc">'+x.c+'</div></div></div>';}).join("");  
+  document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("a",b.dataset.tab===st.tab);});  
+}  
+  
+function checkHealth(){st.consecutiveActions++;if(st.consecutiveActions>=3&&!st.hasRested&&Math.random()<0.4){var sym=["连日操劳，得了重感冒","长期熬夜，免疫力下降发高烧","饮食不规律，低血糖发作","过度操劳，楼梯踩空摔跤"][Math.floor(Math.random()*4)];var dmg=Math.floor(Math.random()*16)+5;st.health=Math.max(0,st.health-dmg);log("[警告] "+sym+"。健康-"+dmg+"。快休息吧！","rd");toast("健康-"+dmg,1);if(st.health<=0){gameOver("身体彻底垮掉了。你在深夜的办公室里倒下，再也没醒来。");return false;}}return true;}  
+  
+function action(id){  
+  if(st.gameOver)return;  
+  if(id==="stat1")return playerProfile();if(id==="debtinfo")return debtInfo();if(id==="viewlogs")return viewLogs();if(id==="talk")return talkMenu();if(id==="encounter")return handleNpc();  
+  if(id.indexOf("s")===0)return staffProfile(id);  
+  if(st.ap<=0)return toast("行动点已耗尽！",1);if(!checkHealth())return;  
+  switch(id){  
+    case"feed":{st.ap--;st.weekActions.push("调酒");var li=50+Math.floor(Math.random()*51);st.liquor+=li;log("["+st.date+"] 调制特调，酒水+"+li+"瓶。","gd");toast("酒水+"+li);render();break;}  
+    case"train":return training();  
+    case"rest":{st.ap--;st.consecutiveActions=0;st.hasRested=true;st.weekActions.push("休息");var r=10+Math.floor(Math.random()*10);st.health=Math.min(100,st.health+r);log("["+st.date+"] 休息养神，健康+"+r+"。","gd");toast("健康+"+r);render();break;}  
+    case"care":return careMenu();case"explore":return explore();case"event":return eventMenu();  
+    case"loan":return loanMenu();case"recruit":return recruit();case"promote":return promote();case"upgrade":return upgrade();  
+  }  
+}  
+  
+function staffProfile(id){  
+  var s=st.staff.find(function(x){return x.id===id;});if(!s)return;if(s.status==="培训中")return toast("培训中，无法互动。",1);  
+  var diary=(s.diary||[]).slice(0,5).map(function(d){return '<p style="margin:0;font-size:11px;color:#888">· '+d+'</p>';}).join("")||'<p style="margin:0;font-size:11px;color:#888">· 还没有特别的心事</p>';  
+  om("店员档案",'<div style="text-align:center;margin-bottom:12px"><span style="font-size:11px;background:#fff;padding:2px 8px;border:1px solid #1a1a2e">'+s.role+'</span><h4 style="font-size:18px;margin:6px 0 2px">'+s.name+'</h4><p style="font-size:12px;color:#555">'+s.nationality+' · '+s.personality+' · '+s.age+'岁 · '+s.status+'</p><div style="margin-top:6px">'+emoB(s)+'</div><p style="font-size:11px;color:#888;margin-top:6px;font-style:italic">'+s.desc+'</p></div>'+bar("好感度",s.favor,"#e8a87c")+bar("忠贞度",s.loyalty,"#6f9e6f")+bar("颜值",s.face,"#f3a4b5")+bar("能力",s.ability,"#7fb0e8")+bar("精神状态",100-s.mental,s.mental>50?"#c62828":"#6f9e6f")+bar("痴狂度",s.obsession||0,"#c62828")+'<div style="font-size:12px;margin:10px 0 6px;color:#b58c52;font-weight:bold">💰 个人存款：'+s.money+' 万</div><div style="border-top:1px dashed #1a1a2e;padding-top:8px;margin-top:6px"><div style="font-size:11px;font-weight:bold;color:#b58c52;margin-bottom:4px">💭 近期心事</div>'+diary+'</div>');  
+}  
+function playerProfile(){var prog=Math.min(100,Math.max(0,Math.round((1-st.debt/(5000*(1+0.02*st.weekCount)))*100)));om("我的档案",'<div style="text-align:center;margin-bottom:14px"><h4 style="font-size:18px">'+st.playerName+'</h4><p style="font-size:12px;color:#555">女性 · 17岁 · 牛郎店老板</p><p style="font-size:13px;color:#b58c52;margin-top:5px;font-weight:bold">性格：'+st.playerPersonality+'</p><p style="font-size:12px;color:#c62828;margin-top:4px">当前负债：'+st.debt+' 万</p><p style="font-size:12px;color:#b58c52;margin-top:4px">店铺等级：'+st.shopLevelName+'</p></div>'+bar("容貌",57,"#f3a4b5")+bar("健康",st.health,"#7fb0e8")+bar("经营进度",prog,"#b58c52"));}  
+function debtInfo(){var remain=st.deadlineWeek-st.weekCount;om("债务详情",'<div style="text-align:left"><p style="font-size:13px;color:#c62828;font-weight:bold;text-align:center;margin-bottom:12px">负债总额：'+st.debt+' 万</p><p style="font-size:12px;color:#555;line-height:1.8">债主：'+st.creditor+'<br>每旬利息：'+Math.round(st.interestRate*100)+'%<br>最后期限：第 '+st.deadlineWeek+' 旬（'+(remain>0?'还剩 '+remain+' 旬':'已到期！')+'）<br>当前现金：'+st.cash+' 万</p><p style="font-size:11px;color:#888;margin-top:10px;line-height:1.7">💡 提示：经营店铺、探索奇遇、向员工索财都能赚钱。别忘了安抚员工，否则他们可能离职——或者，陷入痴狂。</p></div>');}  
+  
+/* --- 日志相关功能 --- */  
+function getStaffLog(s) {  
+  var log = [];  
+  var isSought = (s.lastSought === st.weekCount);  
+  var p = s.personality;  
+  var isCrazy = s.obsession >= 60 || s.favor >= 90;  
+  
+  if (isSought) {  
+    if (p === "病娇" || p === "偏执" || p === "狼狗" || isCrazy) {  
+      log.push(rnd([  
+        "她向我要钱了……太好了！这说明她需要我！我甚至想把所有器官都卖掉换成钱给她，只求她多看我一眼。",  
+        "钱算什么？只要她愿意拿，我的命都可以是她的。她终于肯依赖我了，我好开心，我生怕她不愿意接受呢！",  
+        "我把所有积蓄都给她了，她拿走钱的时候，我的心脏狂跳不止。希望她明天再来要，后天也要，永远都只要我的钱。",  
+        "她愿意要我的钱，说明没把我当外人！求求你再多依赖我一点吧，哪怕是把我榨干我也甘之如饴。"  
+      ]));  
+    } else if (p === "温柔" || p === "理性" || p === "谋士") {  
+      log.push(rnd([  
+        "老板向我要钱了，她一定是遇到难处了。我给了她，但她看起来很疲惫。希望我能成为她可以依靠的人，不仅是钱，连肩膀也可以借给她。",  
+        "能帮她分担一点是一点吧。虽然她把钱拿走了，但我看到她紧锁的眉头，只心疼她这么辛苦。",  
+        "不知道这笔钱够不够……真想多帮她一点。她什么时候才能不把我当外人，什么都依赖我呢？"  
+      ]));  
+    } else {  
+      log.push(rnd([  
+        "她居然找我要钱？哼，不给又怎样……其实我早就准备好了，她想拿就拿吧，我的就是她的。",  
+        "别误会，我只是看她最近为了债务焦头烂额，才勉为其难把钱给她的。才不是因为她盯着我看。",  
+        "被她拿走钱的时候，心里有点高兴。她愿意要我的钱，说明我在她心里还是有点位置的吧？"  
+      ]));  
+    }  
+  }  
+  
+  if (isCrazy) {  
+    log.push(rnd([  
+      "今天接待了三个客人，但我满脑子都是老板。客人的脸和老板的脸不断重叠，我差点吐出来。",  
+      "看着镜子里的自己，我是不是又变好看了？老板今天多看了我两秒，我开心得发抖。",  
+      "有个客人想摸我的手，我躲开了。除了老板，谁碰我我都觉得恶心。",  
+      "老板今天跟别人说了那么久的话……那个人是谁？好想把他眼睛挖出来。",  
+      "只要能在店里远远看着老板，我就觉得活着有意义。如果她不要我了，我会死的。"  
+    ]));  
+  } else if (s.favor >= 45) {  
+    log.push(rnd([  
+      "今天在练习调酒，希望能调出老板最喜欢的味道。",  
+      "不知道老板有没有注意到我今天的发型？好像没看呢。",  
+      "工作的时候总是不自觉地看向办公室的方向。",  
+      "被客人夸了，但老板没有夸我，有点失落。",  
+      "今天老板穿着黑色的衣服，真的很好看。"  
+    ]));  
+  } else {  
+    log.push(rnd([  
+      "今天接待了一位挑剔的客人，应付得有些吃力，明天得去请教一下前辈。",  
+      "感觉最近腰很酸，可能是站得太久了。不过为了业绩，只能咬牙坚持。",  
+      "偷偷在休息室打了个盹。老板好像没发现。",  
+      "今天店里新进了一批酒，味道挺冲的。",  
+      "被客人夸了句好看，有些高兴，希望下次能多拿点提成。"  
+    ]));  
+  }  
+  return log.join("<br><br>");  
+}  
+  
+function viewLogs() {  
+  var h = '<div style="font-size:11px; color:#c62828; margin-bottom:10px; padding:8px; background:#fff3f3; border:1px dashed #c62828;">⚠️ 警告：私人日志是员工最隐秘的角落。窥探他们的隐私，可能会唤醒不可名状的执念……确定要看吗？</div>';  
+  h += '<div style="display:flex; flex-direction:column; gap:10px;">';  
+    
+  if(st.staff.length === 0) h += '<p style="text-align:center;color:#999;font-size:12px;">店里还没有员工</p>';  
+    
+  st.staff.forEach(function(s) {  
+    var isCrazy = s.favor >= 95 && s.loyalty <= 90;  
+    var topThought = "";  
+    if (isCrazy) {  
+      topThought = "<span style='color:#c62828; font-weight:bold;'>我爱你我爱你我爱你我爱你我爱你我爱你</span>";  
+    } else {  
+      if (s.favor >= 85) topThought = rnd(["好想把她锁起来，谁也不给看。", "她今天又没正眼看我，心好痛。", "只要她一句话，我连命都可以不要。"]);  
+      else if (s.favor >= 45) topThought = rnd(["老板今天好美……", "希望她多关注我一下。", "我会努力成为头牌的！"]);  
+      else topThought = rnd(["什么时候发工资？", "今天真的好累。", "这工作真不是人干的。"]);  
+    }  
+      
+    h += '<div style="background:#fff; border:2px solid #1a1a2e; padding:12px; box-shadow:3px 3px 0 #1a1a2e; cursor:pointer;" onclick="openDiary(\''+s.id+'\')">'  
+      + '<div style="font-weight:bold; margin-bottom:8px; display:flex; justify-content:space-between; border-bottom:1px dashed #ccc; padding-bottom:5px;">'  
+      + '<span>【'+s.name+'】 <span style="font-size:10px;font-weight:normal;color:#888;">('+s.personality+')</span></span>'  
+      + emoB(s)  
+      + '</div>'  
+      + '<div style="font-size:12px; color:#555; line-height:1.7; text-indent:2em; margin-bottom:10px;">' + getStaffLog(s) + '</div>'  
+      + '<div style="font-size:11px; text-align:right; border-top:1px dotted #ccc; padding-top:5px;">💭 本周最强烈的想法：<span style="color:#b58c52;">' + topThought + '</span></div>'  
+      + '</div>';  
+  });  
+  h += '</div>';  
+  om("员工日志", h);  
+}  
+  
+function openDiary(id) {  
+  var s = st.staff.find(function(x){return x.id===id;});  
+  if(!s) return;  
+    
+  var isCrazy = s.favor >= 95 && s.loyalty <= 90;  
+    
+  if (isCrazy) {  
+    s.diaryCount = (s.diaryCount || 0) + 1;  
+    if (s.diaryCount >= 4) {  
+      playCrazyText(s, true);  
+    } else {  
+      playCrazyText(s, false);  
+    }  
+  } else {  
+    showNormalDiaryModal(s);  
+  }  
+}  
+  
+function playCrazyText(s, isFatal) {  
+  var screen = document.createElement('div');  
+  screen.className = 'flash-screen';  
+  screen.style.display = 'block';  
+  document.body.appendChild(screen);  
+    
+  var text = isFatal ? "不要离开我" : "我爱你";  
+  for (var i = 0; i < 60; i++) {  
+    var span = document.createElement('span');  
+    span.className = 'flash-text';  
+    span.innerText = text;  
+    span.style.left = Math.random() * 90 + '%';  
+    span.style.top = Math.random() * 90 + '%';  
+    span.style.fontSize = (Math.random() * 20 + 14) + 'px';  
+    span.style.transform = 'rotate(' + (Math.random() * 90 - 45) + 'deg)';  
+    span.style.animationDelay = (Math.random() * 0.2) + 's';  
+    screen.appendChild(span);  
+  }  
+    
+  if (isFatal) {  
+    setTimeout(function() {  
+      screen.remove();  
+      localStorage.removeItem("ng_auto");  
+      om("GAME OVER", '<div style="text-align:center;padding:20px;"><h2 style="color:#c62828;font-size:26px;margin-bottom:20px;letter-spacing:2px;">GAME OVER</h2><p style="color:#333;font-size:14px;line-height:2;font-weight:bold;">你看到了不该看的东西，也彻底唤醒了他。<br>门外传来了沉重且毫无规律的脚步声……<br>“老板，你终于愿意了解我了。”</p><div class="mb2 p" style="margin-top:20px" onclick="doReset()">重新开始</div></div>');  
+    }, 3500);  
+  } else {  
+    setTimeout(function() {  
+      screen.remove();  
+      showCrazyDiaryModal(s);  
+    }, 3500);  
+  }  
+}  
+  
+function showCrazyDiaryModal(s) {  
+  var days = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];  
+  var content = [];  
+  for(var i=0; i<7; i++) {  
+    var crazytxt = Array(Math.floor(Math.random()*5)+4).join("我爱你") + "我爱你";  
+    content.push("<strong style='color:#c62828;'>" + days[i] + "</strong><br><span style='color:#c62828;font-weight:bold;'>" + crazytxt + "</span>");  
+  }  
+  om(s.name + " 的日记", '<div style="max-height:60vh;overflow-y:auto;padding:10px;background:#fff;border:2px solid #c62828;box-shadow:3px 3px 0 #c62828;color:#c62828;font-size:12px;line-height:1.8;">' + content.join("<br><br>") + '</div><div class="mbl" style="margin-top:15px"><div class="mb2 d" onclick="cm()">关上手账</div></div>');  
+}  
+  
+function showNormalDiaryModal(s) {  
+  var days = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];  
+  var d = [];  
+  var isSought = (s.lastSought === st.weekCount);  
+  var p = s.personality;  
+    
+  for(var i=0; i<7; i++) {  
+    var txt = "";  
+    if (isSought && i === 2) {  
+      if(p==="病娇" || p==="偏执" || s.favor>=80) {  
+        txt = "老板今天向我要钱了。太好了，她需要我！只要能帮到她，要多少我都可以给，她愿意依赖我，我真的好幸福。";  
+      } else if (p==="傲娇") {  
+        txt = "她居然找我要钱，哼，拿去吧，反正我的钱也没什么用。别误会，我只是看她可怜而已。";  
+      } else {  
+        txt = "老板向我要钱，说是为了填补店里的亏空。虽然有些心疼，但还是全给她了，希望她别太累。";  
+      }  
+    } else {  
+      if (s.favor >= 85 || s.obsession >= 50) {  
+        txt = rnd([  
+          "老板今天穿的衣服真好看，好想把它珍藏起来。",  
+          "有个不长眼的客人碰了老板的手，我差点忍不住动手。",  
+          "一整晚我的视线都没离开过办公室的门。",  
+          "她今天对我笑了，那个笑容让我兴奋得整夜睡不着。",  
+          "听着别人叫她老板，我嫉妒得发狂。",  
+          "如果能看到她只属于我一个人，就算死也值了。",  
+          "我又去收集了她掉在吧台上的一根头发。"  
+        ]);  
+      } else if (s.favor >= 45) {  
+        txt = rnd([  
+          "不知道老板有没有注意到我今天的发型？",  
+          "被客人夸了，但如果夸我的是老板就好了。",  
+          "今天在走廊和老板擦肩而过，心跳得好快。",  
+          "特意去学了新的调酒技巧，想找机会在她面前表现一下。",  
+          "她好像心情不太好，真想替她分担一点。",  
+          "只要能在店里远远看着她，我就觉得挺开心的。",  
+          "和同事聊起了老板，装作不经意的样子打听了几句。"  
+        ]);  
+      } else {  
+        txt = rnd([  
+          "今天接待了一个特别挑剔的客人，真是累人。",  
+          "业绩还是一般，不知道这周的提成能有多少。",  
+          "店里规矩挺多的，不过薪资待遇还算可以。",  
+          "趁着休息去抽了根烟，被领班瞪了一眼。",  
+          "希望老板别老是盯着业绩看，压力太大了。",  
+          "偶尔会想，为什么要来干这行呢。",  
+          "下班了，准备回家睡大觉。"  
+        ]);  
+      }  
+    }  
+    d.push("<strong style='color:#b58c52;'>" + days[i] + "</strong><br>" + txt);  
+  }  
+    
+  om(s.name + " 的日记", '<div style="max-height:60vh;overflow-y:auto;padding:15px;background:#fdfbf7;border:1px solid #ddd;box-shadow:inset 0 0 10px rgba(0,0,0,0.05);font-size:12.5px;line-height:1.8;color:#333;">' + d.join("<br><br>") + '</div><div class="mbl" style="margin-top:15px"><div class="mb2 p" onclick="cm()">合上日记</div></div>');  
+}  
+  
+/* --- 沟通与经营 --- */  
+function talkMenu(){if(st.ap<=0)return toast("行动点已耗尽！",1);om("选择沟通方式",'<div class="mbl"><div class="mb2" onclick="subAction(\'调情\')">💋 调情(好感↑)</div><div class="mb2" onclick="subAction(\'PUA\')">🔮 PUA(高风险)</div><div class="mb2 g" onclick="subAction(\'索财\')">💰 索财(得钱)</div><div class="mb2 d" onclick="subAction(\'开除\')">🚫 开除员工</div></div>');}  
+function subAction(sub){cm();var list=st.staff.filter(function(s){return s.status!=="培训中";});if(list.length===0)return toast("没有可互动的员工！",1);var h='<div class="mbl">';list.forEach(function(s){h+='<div class="mb2" onclick="pickTarget(\''+sub+'\',\''+s.id+'\')">'+s.name+' '+emoB(s)+'</div>';});h+='</div>';setTimeout(function(){om("对谁进行【"+sub+"】？",h);},150);}  
+function pickTarget(sub,id){  
+  cm();if(st.ap<=0)return toast("行动点不足！",1);if(!checkHealth())return;var s=st.staff.find(function(x){return x.id===id;});if(!s)return;  
+  if(sub==="开除")return setTimeout(function(){om("确认开除",'<div style="text-align:center"><p style="font-size:15px;color:#c62828;font-weight:bold;margin-bottom:15px">确定要开除【'+s.name+'】吗？</p><div class="mbl"><div class="mb2 d" onclick="confirmFire(\''+id+'\')">确认开除</div><div class="mb2" onclick="cm()">取消</div></div></div>');},150);  
+  if(sub==="PUA")return setTimeout(function(){om("选择PUA类型",'<div style="text-align:center"><p style="font-size:13px;color:#555;margin-bottom:10px">对【'+s.name+'】使用PUA：</p><div class="mbl"><div class="mb2" onclick="doPua(\''+id+'\',\'work\')">🔮 工作向(忠贞↑↑)</div><div class="mb2" onclick="doPua(\''+id+'\',\'love\')">🔮 情感向(好感↑↑)</div></div></div>');},150);  
+  st.ap--;st.weekActions.push(sub);var msg="",col="gy",h="";  
+  if(sub==="调情"){var rate=0.15+s.favor/150;if(Math.random()<rate){var i=3+Math.floor(Math.random()*5),o=s.favor;s.favor=Math.min(100,s.favor+i);s.loyalty=Math.min(100,s.loyalty+2);mem(s,"与你调情成功，心跳加速，好感+"+i);msg="与【"+s.name+"】调情成功。";h='<p style="text-align:center;font-size:14px;margin-top:15px">好感度：'+o+" → "+s.favor+' <span style="color:#e8a87c">( +'+i+' )</span></p>';}else{var d=2+Math.floor(Math.random()*3),o=s.favor;s.favor=Math.max(0,s.favor-d);mem(s,"被你冷淡拒绝，好感-"+d);msg="与【"+s.name+"】调情失败。";col="rd";h='<p style="text-align:center;font-size:14px;margin-top:15px;color:#c62828">调情失败！好感度 -'+d+'</p>';}}  
+  else if(sub==="索财"){  
+    if(s.money<=0){toast("【"+s.name+"】身无分文。",1);st.ap++;st.weekActions.pop();render();return;}  
+    s.lastSought = st.weekCount;  
+    if(s.favor>=100){var m=s.money;st.cash+=m;s.money=0;s.obsession=Math.min(100,(s.obsession||0)+10);msg="【"+s.name+"】已为你痴狂，毫不犹豫地献上一切。";col="gd";mem(s,"为你痴狂，献上全部财产"+m+"万，眼神痴迷");h='<p style="text-align:center;font-size:14px;margin-top:15px">获得 '+m+' 万现金！<br><span style="font-size:12px;color:#c62828">（痴狂度 +10，他却甘之如饴）</span></p>';}  
+    else if(s.favor>=90){var m=s.money;st.cash+=m;s.money=0;var ld=4+Math.floor(Math.random()*5);s.loyalty=Math.max(0,s.loyalty-ld);s.obsession=Math.min(100,(s.obsession||0)+8);msg="【"+s.name+"】死心塌地，主动献上所有存款"+m+"万。";col="gd";mem(s,"死心塌地，主动献上所有存款"+m+"万");h='<p style="text-align:center;font-size:14px;margin-top:15px">获得 '+m+' 万现金！<br><span style="font-size:12px;color:#c62828">（忠贞度 -'+ld+'）</span></p>';}  
+    else if(s.favor>40&&s.loyalty>40){var ratio=s.favor/200;var am=Math.floor(s.money*ratio);if(am<10)am=Math.min(10,s.money);st.cash+=am;s.money-=am;s.loyalty=Math.max(0,s.loyalty-5);msg="向【"+s.name+"】索财。";col="gd";mem(s,"被你索财"+am+"万，虽有些心疼还是给了");h='<p style="text-align:center;font-size:14px;margin-top:15px">获得 '+am+' 万现金！<br><span style="font-size:12px;color:#555">（剩余存款：'+s.money+' 万，忠贞-5）</span></p>';}  
+    else{var fd=5+Math.floor(Math.random()*5),ld=5+Math.floor(Math.random()*5);s.favor=Math.max(0,s.favor-fd);s.loyalty=Math.max(0,s.loyalty-ld);msg="向【"+s.name+"】索财失败。";col="rd";mem(s,"被你索财却拒绝了，心生不满，好感-"+fd);h='<p style="text-align:center;font-size:14px;margin-top:15px;color:#c62828">索财失败：好感度不足！<br>好感度 -'+fd+'，忠贞度 -'+ld+'</p>';s.lastSought = -1;}  
+  }  
+  log("["+st.date+"] "+msg,col);setTimeout(function(){om(sub+"结算",h+'<div class="mb2 p" style="margin-top:15px" onclick="cm()">继续</div>');},150);render();  
+}  
+  
+function doPua(id,type){  
+  cm();if(st.ap<=0)return toast("行动点不足！",1);if(!checkHealth())return;var s=st.staff.find(function(x){return x.id===id;});if(!s)return;var pc=s.puaCount||0;  
+  if(pc===0)return setTimeout(function(){om("⚠️ 风险提示",'<div style="text-align:center"><p style="font-size:13px;color:#c62828;font-weight:bold;margin-bottom:10px">PUA是高风险手段！</p><p style="font-size:12px;color:#555;margin-bottom:15px">过度使用会大幅增加员工痴狂风险。你确定要对【'+s.name+'】使用吗？</p><div class="mbl"><div class="mb2 d" onclick="confirmPua(\''+id+'\',\''+type+'\')">确认PUA</div><div class="mb2" onclick="cm()">取消</div></div></div>');},150);  
+  if(pc===1){if(s.mental>50)return triggerEnd(s);return setTimeout(function(){om("⚠️ 极度危险",'<div style="text-align:center"><p style="font-size:14px;color:#c62828;font-weight:bold;margin-bottom:10px">【'+s.name+'】已经非常不稳定！</p><p style="font-size:12px;color:#555;margin-bottom:15px">继续PUA将极大概率触发不可挽回的结局。</p><div class="mbl"><div class="mb2 d" onclick="confirmPua(\''+id+'\',\''+type+'\')">一意孤行</div><div class="mb2" onclick="cm()">悬崖勒马</div></div></div>');},150);}  
+  triggerEnd(s);  
+}  
+function confirmPua(id,type){  
+  cm();if(st.ap<=0)return toast("行动点不足！",1);var s=st.staff.find(function(x){return x.id===id;});if(!s)return;st.ap--;st.weekActions.push("PUA");s.puaCount=(s.puaCount||0)+1;  
+  if(s.mental>50&&s.favor<30&&s.loyalty<30){st.staff=st.staff.filter(function(x){return x.id!==id;});log("["+st.date+"] 【"+s.name+"】在极度警觉下不辞而别。","rd");toast("【"+s.name+"】离职了");render();return;}  
+  var rate=s.favor>=80?1:s.favor>=50?0.3+s.puaCount*0.1:0.1+s.puaCount*0.05;if(rate>0.75)rate=0.75;var ok=Math.random()<rate;var h="",msg="";  
+  if(ok){s.mental=Math.min(100,s.mental+15);s.obsession=Math.min(100,(s.obsession||0)+10);if(type==="work"){var i=15+Math.floor(Math.random()*11),o=s.loyalty;s.loyalty=Math.min(100,s.loyalty+i);mem(s,"被PUA后对你死心塌地，忠贞+"+i);h='<div style="text-align:center;padding:10px"><h4 style="color:#6f9e6f;font-size:18px;margin-bottom:10px">🎉 PUA成功！</h4><p style="font-size:15px;font-weight:bold">忠贞度：'+o+" → "+s.loyalty+' <span style="color:#6f9e6f">( +'+i+' )</span></p><p style="color:#c62828;font-size:12px;margin-top:5px">⚠️ 精神压力+15，痴狂度+10</p></div>';msg="成功对【"+s.name+"】进行工作向PUA。";}else{var i=15+Math.floor(Math.random()*11),o=s.favor;s.favor=Math.min(100,s.favor+i);mem(s,"被PUA后更痴迷于你，好感+"+i);h='<div style="text-align:center;padding:10px"><h4 style="color:#6f9e6f;font-size:18px;margin-bottom:10px">🎉 PUA成功！</h4><p style="font-size:15px;font-weight:bold">好感度：'+o+" → "+s.favor+' <span style="color:#e8a87c">( +'+i+' )</span></p><p style="color:#c62828;font-size:12px;margin-top:5px">⚠️ 精神压力+15，痴狂度+10</p></div>';msg="成功对【"+s.name+"】进行情感向PUA。";}log("["+st.date+"] "+msg,"gd");}  
+  else{var d=10+Math.floor(Math.random()*6),o=s.favor;s.favor=Math.max(0,s.favor-d);s.mental=Math.min(100,s.mental+25);s.obsession=Math.min(100,(s.obsession||0)+8);mem(s,"被你的PUA反噬，好感-"+d+"，精神濒临崩溃");var ex="";if(type==="love"){var dd=5+Math.floor(Math.random()*6),ol=s.loyalty;s.loyalty=Math.max(0,s.loyalty-dd);ex='<p style="font-size:14px;margin-top:5px;color:#c62828">忠贞度：'+ol+" → "+s.loyalty+' ( -'+dd+' )</p>';}h='<div style="text-align:center;padding:10px"><h4 style="color:#c62828;font-size:18px;margin-bottom:10px">💥 PUA失败！</h4><p style="font-size:15px;font-weight:bold">好感度：'+o+" → "+s.favor+' <span style="color:#c62828">( -'+d+' )</span></p>'+ex+'<p style="color:#c62828;font-size:12px;margin-top:5px">⚠️ 精神压力+25，痴狂度+8</p></div>';log("["+st.date+"] PUA【"+s.name+"】失败。","rd");}  
+  if(s.mental>=100)return triggerEnd(s);setTimeout(function(){om("PUA结算",h+'<div class="mb2 p" style="margin-top:15px" onclick="cm()">继续</div>');},150);render();  
+}  
+var confirmFire=function(id){cm();if(st.ap<=0)return toast("行动点不足！",1);st.ap--;st.weekActions.push("开除");var s=st.staff.find(function(x){return x.id===id;});if(!s)return;st.staff=st.staff.filter(function(x){return x.id!==id;});log("["+st.date+"] 你开除了【"+s.name+"】。","rd");toast("已开除 "+s.name);render();};  
+  
+function training(){if(st.cash<200)return toast("现金不足200万！",1);var h='<div class="mbl"><p style="font-size:12px;color:#555;margin-bottom:5px">选送员工培训（消耗200万，耗时一旬）：</p>',ok=false;st.staff.forEach(function(s){if(s.status!=="培训中"){h+='<div class="mb2" onclick="startTrain(\''+s.id+'\')">'+s.name+' (能力 '+s.ability+')</div>';ok=true;}});h+='</div>';if(!ok)return toast("没有可培训员工！");om("选择培训员工",h);}  
+var startTrain=function(id){cm();if(st.ap<=0)return toast("行动点不足！",1);var s=st.staff.find(function(x){return x.id===id;});if(!s||s.status==="培训中")return;st.ap--;st.weekActions.push("培训");st.cash-=200;s.status="培训中";mem(s,"被你送去培训，既期待又怕让你失望");log("["+st.date+"] 花费200万送【"+s.name+"】参加培训。","gd");toast("【"+s.name+"】已进入培训");render();};  
+function careMenu(){var list=st.staff.filter(function(s){return s.status!=="培训中";});if(list.length===0)return toast("没有需要安抚的员工！",1);var h='<div class="mbl">';list.forEach(function(s){h+='<div class="mb2" onclick="doCare(\''+s.id+'\')">'+s.name+' '+emoB(s)+'</div>';});h+='</div>';om("选择要安抚的员工",h);}  
+function doCare(id){  
+  cm();  
+  if(st.ap<=0) return toast("行动点不足！",1);  
+  if(!checkHealth()) return;  
+  var s=st.staff.find(function(x){return x.id===id;});  
+  if(!s) return;  
+  var rate=0.25, txt="稳定";  
+  if(s.mental>50){rate=0.8;txt="濒临崩溃";}  
+  else if(s.mental>20){rate=0.6;txt="不稳定";}  
+  if(Math.random()>rate){  
+    st.ap--;  
+    st.weekActions.push("安抚");  
+    log("["+st.date+"] 试图安抚【"+s.name+"】，但状态为【"+txt+"】，安抚失败。","rd");  
+    toast("安抚失败！",1);  
+    render();  
+    return;  
+  }  
+  st.ap--;  
+  st.weekActions.push("安抚");  
+  var i=5+Math.floor(Math.random()*8); // 好感增加  
+  var od=10+Math.floor(Math.random()*15); // 痴狂度降低  
+  s.favor=Math.min(100,s.favor+i);  
+  s.obsession=Math.max(0,(s.obsession||0)-od);  
+  mem(s,"被你温柔安抚，执念消退，好感+"+i+"，痴狂度-"+od);  
+  log("["+st.date+"] 安抚【"+s.name+"】，好感+"+i+"，痴狂度-"+od+"。","gd");  
+  toast("好感+"+i+"，痴狂度-"+od);  
+  render();  
+}  
+function explore(){st.ap--;st.weekActions.push("探索");st.exploreCount++;if(st.exploreCount>=25||Math.random()<0.06){var n=rN();st.npc={name:n,face:85+Math.floor(Math.random()*15),ability:80+Math.floor(Math.random()*20),type:"奇遇NPC",nationality:rNat(),personality:rPer(),age:20,favor:50,loyalty:60,status:"未入职",desc:"天赋极高，背景成谜。",money:0,mental:0,obsession:0,diary:[]};log("["+st.date+"] 保底触发！探索到奇遇角色【"+n+"】！","gd");toast("发现奇遇角色！");st.exploreCount=0;}else{log("["+st.date+"] 街头巷尾探索，未发现合适人选。","gy");toast("未发现奇遇");}render();}  
+function eventMenu(){st.ap--;st.weekActions.push("事件");var e=EV[Math.floor(Math.random()*EV.length)];var h='<p style="font-size:13px;color:#555;margin-bottom:15px;font-weight:bold">'+e.d+'</p><div class="mbl">';e.o.forEach(function(o,i){h+='<div class="mb2" onclick="doEvent(\''+e.t+'\','+i+')">'+o.t+'</div>';});h+='</div>';om("触发事件："+e.t,h);}  
+function doEvent(t,i){cm();var e=EV.find(function(x){return x.t===t;});if(!e||!e.o[i])return;var oc=st.cash,od=st.debt,oh=st.heat,os=JSON.parse(JSON.stringify(st.staff));e.o[i].e();var logs=[];if(st.cash!==oc)logs.push("现金"+(st.cash>oc?"+":"")+(st.cash-oc)+"万");if(st.debt!==od)logs.push("负债"+(st.debt>od?"+":"")+(st.debt-od)+"万");if(st.heat!==oh)logs.push("人气"+(st.heat>oh?"+":"")+(st.heat-oh));st.staff.forEach(function(s,idx){var o=os[idx];if(!o)return;if(s.favor!==o.favor)logs.push("【"+s.name+"】好感"+(s.favor>o.favor?"+":"")+(s.favor-o.favor));if(s.loyalty!==o.loyalty)logs.push("【"+s.name+"】忠贞"+(s.loyalty>o.loyalty?"+":"")+(s.loyalty-o.loyalty));});log("["+st.date+"] 事件【"+t+"】："+e.o[i].t+"。"+(logs.join("；")||"无事发生"),logs.some(function(l){return l.indexOf("+")!==-1;})?"gd":"gy");toast("事件结算完毕");render();}  
+function loanMenu(){om("偿还贷款",'<div style="text-align:center"><p style="font-size:14px;font-weight:bold;margin-bottom:10px">负债总额：<span style="color:#c62828">'+st.debt+'万</span></p><p style="font-size:12px;color:#555;margin-bottom:15px">现金：'+st.cash+'万</p><div class="mbl"><div class="mb2" onclick="repay(100)">偿还100万</div><div class="mb2" onclick="repay(500)">偿还500万</div><div class="mb2 p" onclick="repay(10000)">一次性结清</div><div class="mb2" onclick="cm()">取消</div></div></div>');}  
+var repay=function(am){if(st.ap<=0)return toast("行动点不足！",1);cm();if(am>st.cash)return toast("现金不足！",1);if(am>st.debt)am=st.debt;st.ap--;st.weekActions.push("还款");st.cash-=am;st.debt-=am;log("["+st.date+"] 偿还"+am+"万，剩余负债"+st.debt+"万。","gd");toast("还款成功！");render();};  
+function recruit(){st.ap--;st.weekActions.push("招聘");var lm=st.shopLevel*8,bf=40+lm+Math.floor(Math.random()*10),ba=40+lm+Math.floor(Math.random()*10),n=rN(),na=rNat(),pe=rPer();om("招聘面试",'<div style="text-align:center"><p style="font-size:13px;color:#555;margin-bottom:10px">一位新人来应聘：</p><h4 style="font-size:18px">'+n+'</h4><p style="font-size:12px;color:#555;margin-bottom:10px">'+na+' · '+pe+' · 20岁</p><p style="font-size:13px">颜值：'+bf+' | 能力：'+ba+'</p><div class="mbl" style="margin-top:20px"><div class="mb2 p" onclick="hire(\''+n+'\',\''+na+'\',\''+pe+'\','+bf+','+ba+')">录用</div><div class="mb2" onclick="cm()">拒绝</div></div></div>');}  
+function hire(n,na,pe,f,a){cm();if(st.staff.length>=maxStaff())return toast("员工已满，请先开除！",1);var id="s"+Date.now();st.staff.push({id:id,name:n,role:"普通员工",age:20,nationality:na,personality:pe,face:f,ability:a,favor:40,loyalty:50,status:"在岗",desc:"新人，看你的眼神躲躲闪闪。",puaCount:0,money:100,mental:0,obsession:0,diary:[],lastSought:-1,diaryCount:0});log("["+st.date+"] 录用了【"+n+"】。","gd");toast("录用成功！");render();}  
+function promote(){st.ap--;st.weekActions.push("宣传");om("宣传力度",'<div style="text-align:center"><p style="font-size:13px;color:#555;margin-bottom:15px">选择宣传力度：</p><div class="mbl"><div class="mb2" onclick="doPromo(50,20,0)">普通宣传<br><span style="font-size:10px;color:#888">花费50万 | 人气+20</span></div><div class="mb2" onclick="doPromo(200,50,0)">大型宣传<br><span style="font-size:10px;color:#888">花费200万 | 人气+50</span></div><div class="mb2 p" onclick="doPromo(500,100,\'r\')">豪华宣传<br><span style="font-size:10px">花费500万 | 人气+100 | 口碑+10~50</span></div></div></div>');}  
+function doPromo(c,h,r){cm();if(st.cash<c)return toast("现金不足！",1);st.cash-=c;st.heat+=h;var rt="";if(r==="r"){var rr=10+Math.floor(Math.random()*41);st.reputation+=rr;rt="，口碑+"+rr;}else if(r>0){st.reputation+=r;rt="，口碑+"+r;}log("["+st.date+"] 花费"+c+"万宣传，人气+"+h+rt+"。","gd");toast("宣传成功！人气+"+h+rt);render();}  
+function upgrade(){var L=[{name:"⭐⭐ 霓虹街铺",cost:500,d:"扩大店面，解锁白领客户群。",b:"客单价提升30%。"},{name:"⭐⭐⭐ CBD会所",cost:2000,d:"豪华装修，设立VIP包厢。",b:"客单价提升60%。"},{name:"⭐⭐⭐⭐ 顶层沙龙",cost:8000,d:"顶级私密沙龙。",b:"客单价提升100%。"},{name:"⭐⭐⭐⭐⭐ 城市传说",cost:30000,d:"夜场传奇，城市地标。",b:"客单价提升160%。"}];var n=st.shopLevel;if(n>=5)return toast("已达最高等级！",1);var u=L[n-1];om("装修升级",'<div style="text-align:left"><p style="font-size:14px;margin-bottom:5px;font-weight:bold">目标：'+u.name+'</p><p style="font-size:12px;color:#555;margin-bottom:10px">'+u.d+'</p><div style="background:#FEF3C7;border:1px solid #1a1a2e;padding:10px;font-size:12px;margin-bottom:15px"><b>收益：</b>'+u.b+'</div><p style="font-size:14px;color:#c62828;font-weight:bold;text-align:center;margin-bottom:15px">需要：'+u.cost+'万</p><div class="mbl"><div class="mb2 p" onclick="doUpgrade('+u.cost+',\''+u.name+'\')">确认装修</div><div class="mb2" onclick="cm()">取消</div></div></div>');}  
+function doUpgrade(c,n){cm();if(st.cash<c)return toast("现金不足！",1);st.cash-=c;st.shopLevel++;st.shopLevelName=n;log("["+st.date+"] 花费"+c+"万升级为【"+n+"】！","gd");toast("升级成功！");render();}  
+  
+function handleNpc(){var n=st.npc;if(!n)return;om("奇遇角色互动",'<div style="text-align:center;margin-bottom:15px"><span style="font-size:12px;background:#FEF3C7;border:1px solid #1a1a2e;padding:2px 8px">奇遇角色</span><h4 style="font-size:18px;margin-top:5px">'+n.name+'</h4><p style="font-size:12px;color:#555">'+n.nationality+' · '+n.personality+' · '+n.age+'岁 · '+n.status+'</p></div>'+bar("颜值",n.face,"#f3a4b5")+bar("能力",n.ability,"#7fb0e8")+bar("好感",n.favor,"#e8a87c")+bar("忠贞度",n.loyalty,"#6f9e6f")+'<div class="mbl" style="margin-top:15px"><div class="mb2" onclick="npcAction(\'chat\')">☕ 聊天(好感小幅↑)</div><div class="mb2" onclick="npcAction(\'flirt\')">💋 调情(好感中幅↑)</div><div class="mb2" onclick="npcAction(\'gift\')">🎁 赠礼(50万，好感大幅↑)</div><div class="mb2 p" onclick="tryRecruit()">🤝 招募(需好感≥60)</div><div class="mb2" onclick="dismissNpc()">❌ 放弃</div></div>');}  
+function npcAction(t){cm();if(st.ap<=0)return toast("行动点不足！",1);if(!checkHealth())return;var n=st.npc;if(!n)return;st.ap--;st.weekActions.push("奇遇");var m="",c="gy",tt="";if(t==="chat"){var i=3+Math.floor(Math.random()*3);n.favor=Math.min(100,n.favor+i);m="与【"+n.name+"】聊天。好感："+(n.favor-i)+"→"+n.favor+"(+"+i+")";c="gd";tt="聊天成功，好感+"+i;}else if(t==="flirt"){var i=5+Math.floor(Math.random()*5);n.favor=Math.min(100,n.favor+i);m="与【"+n.name+"】调情。好感："+(n.favor-i)+"→"+n.favor+"(+"+i+")";c="gd";tt="调情成功，好感+"+i;}else if(t==="gift"){if(st.cash<50)return toast("现金不足50万！",1);st.cash-=50;var i=10+Math.floor(Math.random()*10);n.favor=Math.min(100,n.favor+i);m="花费50万赠礼。好感："+(n.favor-i)+"→"+n.favor+"(+"+i+")";c="gd";tt="赠礼成功，好感+"+i;}log("["+st.date+"] "+m,c);toast(tt);render();setTimeout(handleNpc,200);}  
+function tryRecruit(){cm();var n=st.npc;if(!n)return;if(n.favor<60)return toast("好感度不足60！",1);if(st.staff.length>=maxStaff())return toast("员工已满，请先开除！",1);if(st.ap<=0)return toast("行动点不足！",1);if(!checkHealth())return;st.ap--;n.id="s"+Date.now();n.role="奇遇员工";n.status="在岗";n.obsession=n.obsession||0;n.diary=n.diary||[];n.lastSought=-1;n.diaryCount=0;st.staff.push(n);st.npc=null;log("["+st.date+"] 成功招募奇遇角色【"+n.name+"】！","gd");toast("已入职！");render();}  
+var dismissNpc=function(){cm();log("["+st.date+"] 婉拒了奇遇角色。","gy");st.npc=null;toast("已放弃");render();};  
+  
+function endWeek(){  
+  if(st.gameOver)return;if(st.ap>0)toast("行动点未用完，强制结算",1);st._lastActs=[].concat(st.weekActions);st.weekCount++;  
+  var m=st.date.match(/(\d+)月/);var mo=m?parseInt(m[1]):3;  
+  if(st.date.indexOf("上旬")!==-1)st.date=st.date.replace("上旬","中旬");else if(st.date.indexOf("中旬")!==-1)st.date=st.date.replace("中旬","下旬");  
+  else{mo=mo+1;if(mo>12){mo=1;var y=st.date.match(/第(\d+)年/);if(y)st.date=st.date.replace(/第\d+年/,"第"+(parseInt(y[1])+1)+"年");}st.date=st.date.replace(/\d+月/,mo+"月").replace("下旬","上旬");}  
+  if(mo>=3&&mo<=5)st.season="春季";else if(mo>=6&&mo<=8)st.season="夏季";else if(mo>=9&&mo<=11)st.season="秋季";else st.season="冬季";  
+  var interest=Math.floor(st.debt*st.interestRate);if(st.debt>0){st.debt+=interest;log("[利息] 高利贷利息滚动：+"+interest+"万（当前 "+st.debt+"万）。","rd");}  
+  st.heat=Math.max(0,st.heat-5);var hd=0;  
+  if(st.weekCount>1){if(!st.hasRested){st.noRestWeeks++;if(st.health<70)hd=5+Math.floor(Math.random()*10);else if(st.noRestWeeks>=3)hd=10+Math.floor(Math.random()*15);else if(Math.random()<0.3)hd=3+Math.floor(Math.random()*5);}else st.noRestWeeks=0;}  
+  if(hd>0){st.health=Math.max(0,st.health-hd);log("[警告] 身体机能下降，健康-"+hd+"。","rd");if(st.health<=0){gameOver("你因为长期过劳，身体彻底垮掉了。");return;}}  
+  st.hasRested=false;var rem=[];  
+  st.staff.forEach(function(s){  
+    if(s.status==="培训中"){var ai=5+Math.floor(Math.random()*6);s.ability=Math.min(100,s.ability+ai);s.status="在岗";mem(s,"培训归来，能力+"+ai);log("["+st.date+"] 【"+s.name+"】培训结束，能力+"+ai+"(当前"+s.ability+")","gd");}  
+    var we=20+st.shopLevel*10+Math.floor(s.ability*0.3+s.face*0.2+st.heat*0.1+Math.random()*30);s.money+=we;  
+    if(s.favor>=100)s.obsession=Math.min(100,(s.obsession||0)+2);if(s.favor>=90)s.loyalty=Math.min(100,s.loyalty+2);  
+    if(s.mental>50&&s.favor<30&&s.loyalty<30){rem.push(s.id);log("["+st.date+"] 【"+s.name+"】因长期高压离职。","rd");}  
+    else if(s.favor>=100&&s.obsession>=70&&s.mental>=60){triggerEnd(s);return;}  
+  });  
+  if(st.gameOver)return;if(rem.length)st.staff=st.staff.filter(function(s){return rem.indexOf(s.id)===-1;});  
+  var rem2=[];st.staff.forEach(function(s){if(s.role==="前男友")return;if(s.loyalty<30&&s.status!=="培训中"){if(s.face>=85||s.ability>=85){if(Math.random()<0.5){log("[危机] 同行挖角！【"+s.name+"】被挖走了。","rd");rem2.push(s.id);}else{log("[危机] 【"+s.name+"】主动辞职。","rd");rem2.push(s.id);}}else log("[警告] 【"+s.name+"】忠诚度过低，有离职风险。","rd");}});  
+  if(rem2.length)st.staff=st.staff.filter(function(s){return rem2.indexOf(s.id)===-1;});  
+  var cc=Math.floor(12*(1+st.heat/100)),aa=st.staff.length>0?st.staff.reduce(function(a,b){return a+b.ability;},0)/st.staff.length:0,asp=Math.floor(30*(1+st.reputation/100)*(1+aa/200)*(1+(st.shopLevel-1)*0.25));var inc=cc*asp,lu=cc*0.5;  
+  if(st.liquor<=0){inc=0;log("[危机] 酒水耗尽！本旬收益为0！","rd");}else if(st.liquor<lu){st.liquor=0;log("[警告] 酒水不足，仅能满足部分客人。","rd");}else st.liquor-=Math.floor(lu);  
+  var exp=150+st.shopLevel*80,np=inc-exp;st.cash+=np;st.ap=st.maxAp;  
+  log("—— 第 "+st.weekCount+" 旬 · 结算 ——","gd");log("客流："+cc+"人 | 客单价："+asp+"万 | 酒水消耗："+Math.floor(lu)+"瓶","gy");log("本旬收入："+inc+"万 | 支出："+exp+"万 | 净利润："+(np>=0?"+":"")+np+"万","gy");  
+  weeklySummary();render();if(st.cash<=0){gameOver();return;}save();weeklyStory();  
+}  
+function weeklySummary(){log("—— 本周小结 ——","gd");log("你本旬的作为："+(st.weekActions.length?st.weekActions.join("、"):"无所事事"),"gy");log("债务："+st.debt+"万（期限第"+st.deadlineWeek+"旬，当前第"+st.weekCount+"旬）","gy");st.staff.slice().sort(function(a,b){return b.favor-a.favor;}).slice(0,3).forEach(function(s){log("【"+s.name+"】对你"+emo(s).t+"（好感"+s.favor+"，忠贞"+s.loyalty+"，痴狂"+(s.obsession||0)+"）",emo(s).c==="#c62828"?"rd":(s.favor>=65?"gd":"gy"));});st.weekActions=[];}  
+  
+var save=function(){try{localStorage.setItem("ng_auto",JSON.stringify({state:st,time:Date.now()}))}catch(e){}};  
+function saveMenu(){var h='<p style="font-size:12px;color:#555;margin-bottom:12px;text-align:center">选择存档位（游戏也会在每旬自动存档）</p>';for(var i=0;i<3;i++){var k="ng_slot_"+i;var d=null;try{d=JSON.parse(localStorage.getItem(k))}catch(e){}var info=d&&d.state?d.state.playerName+" · "+d.state.date+" · 现金"+d.state.cash+"万":"空存档位";h+='<div class="slot" style="margin-bottom:8px"><div class="si"><div class="sn">存档位 '+(i+1)+'</div><div class="sd">'+info+'</div></div><div class="sa"><button class="sbtn p" onclick="doSaveSlot('+i+')">存</button><button class="sbtn" onclick="doLoadSlot('+i+')">读</button><button class="sbtn d" onclick="doDelSlot('+i+')">删</button></div></div>';}h+='<div class="mbl" style="margin-top:12px"><div class="mb2" onclick="exportSave()">📤 导出存档（备份）</div><div class="mb2" onclick="importSave()">📥 导入存档</div></div>';om("存档 / 读档",h);}  
+var doSaveSlot=function(i){try{localStorage.setItem("ng_slot_"+i,JSON.stringify({state:st,time:Date.now()}));toast("已存入 存档位"+(i+1))}catch(e){toast("存档失败",1)}};  
+var doDelSlot=function(i){try{localStorage.removeItem("ng_slot_"+i);toast("已删除")}catch(e){}};  
+function doLoadSlot(i){try{var d=JSON.parse(localStorage.getItem("ng_slot_"+i));if(d&&d.state){Object.keys(st).forEach(function(k){if(d.state[k]!==undefined)st[k]=d.state[k]});norm();cm();render();toast("读档成功！欢迎回来，"+st.playerName+"！");return}}catch(e){}toast("该存档位为空",1);}  
+function exportSave(){var d=JSON.stringify({state:st,time:Date.now()});om("导出存档",'<p style="font-size:12px;color:#555;margin-bottom:8px">复制下方代码保存到记事本，即可备份游戏进度：</p><textarea class="ta" id="saveText" readonly onclick="this.select()">'+d.replace(/</g,"&lt;")+'</textarea><div class="mbl" style="margin-top:10px"><div class="mb2 p" onclick="copySave()">一键复制</div><div class="mb2" onclick="cm()">完成</div></div>');}  
+function copySave(){var t=$("saveText");t.select();try{document.execCommand("copy");toast("已复制到剪贴板")}catch(e){toast("请手动全选复制",1)}}  
+function importSave(){om("导入存档",'<p style="font-size:12px;color:#555;margin-bottom:8px">粘贴之前导出的存档代码：</p><textarea class="ta" id="loadText" placeholder="在此粘贴存档代码"></textarea><div class="mbl" style="margin-top:10px"><div class="mb2 p" onclick="applyImport()">导入</div><div class="mb2" onclick="cm()">取消</div></div>');}  
+function applyImport(){var v=$("loadText").value.trim();if(!v)return toast("请先粘贴代码",1);try{var d=JSON.parse(v.replace(/&lt;/g,"<").replace(/&gt;/g,">"));if(d&&d.state){Object.keys(st).forEach(function(k){if(d.state[k]!==undefined)st[k]=d.state[k]});norm();cm();render();toast("导入成功！");}}catch(e){toast("存档格式错误",1)}}  
+  
+function confirmReset() {  
+  om("确认重开", '<div style="text-align:center"><p style="font-size:14px;color:#c62828;font-weight:bold;margin-bottom:15px">确定要重新开始吗？<br>当前所有进度将丢失！</p><div class="mbl"><div class="mb2 d" onclick="doReset()">狠心重开</div><div class="mb2" onclick="cm()">取消</div></div></div>');  
+}  
+  
+function doReset() {  
+  // 只清空自动存档，保留手动存档  
+  localStorage.removeItem("ng_auto");  
+    
+  // 重置核心数据  
+  st.playerName = "";  
+  st.playerPersonality = "";  
+  st.date = "第1年 3月 上旬";  
+  st.season = "春季";  
+  st.shopLevel = 1;  
+  st.shopLevelName = "⭐";  
+  st.heat = 0;  
+  st.reputation = 0;  
+  st.liquor = 20;  
+  st.health = 100;  
+  st.consecutiveActions = 0;  
+  st.hasRested = false;  
+  st.weekCount = 1;  
+  st.noRestWeeks = 0;  
+  st.exploreCount = 0;  
+  st.cash = 500;  
+  st.debt = 5000;  
+  st.interestRate = 0.02;  
+  st.deadlineWeek = 18;  
+  st.ap = 7;  
+  st.maxAp = 7;  
+  st.tab = "home";  
+  st.npc = null;  
+  st.gameOver = false;  
+  st.prologueDone = false;  
+  st.storyPlayed = [];  
+  st.weekActions = [];  
+  st._lastActs = [];  
+  st.flags = {};  
+  st.creditor = "金爷";  
+    
+  // 重新生成基础员工  
+  initStaff();  
+    
+  // 关弹窗并清空事迹记录  
+  cm();  
+  document.getElementById("log").innerHTML = "";  
+    
+  // 重新渲染并呼出起名界面  
+  render();  
+  askName();  
+}  
+  
+function bindEvents(){  
+  $("be").onclick=endWeek;  
+  $("bs").onclick=saveMenu;  
+  $("br").onclick=confirmReset;  
+  $("mc").onclick=cm;  
+  $("bn").addEventListener("click",function(e){var btn=e.target.closest(".nb");if(btn){st.tab=btn.dataset.tab;render();}});  
+  $("tab").addEventListener("click",function(e){var ac=e.target.closest(".ac");if(ac&&!ac.classList.contains("tr")){action(ac.dataset.id);}});  
+}  
+  
+window.onload=function(){  
+  bindEvents();  
+  initStaff();  
+  norm();  
+  try{  
+    var auto=localStorage.getItem("ng_auto");  
+    if(auto){  
+      var d=JSON.parse(auto);  
+      if(d&&d.state&&d.state.playerName&&Array.isArray(d.state.staff)&&d.state.staff.length>0){  
+        Object.keys(st).forEach(function(k){if(d.state[k]!==undefined)st[k]=d.state[k]});  
+        norm();render();  
+      }else{  
+        localStorage.removeItem("ng_auto");askName();  
+      }  
+    }else{askName();}  
+  }catch(e){localStorage.removeItem("ng_auto");askName();}  
+  render();  
+};  
+</script>  
+</body>  
+</html>  
